@@ -1,5 +1,5 @@
 
-$SourceRootPath = Join-Path -Path $PSScriptRoot -ChildPath (Join-Path -Path 'Invoke-Docker-PSObject' -ChildPath 'Source')
+$SourceRootPath = Join-Path -Path $PSScriptRoot -ChildPath 'Source'
 # dot source all ps1 scripts under Source; note: no pester test files not stored under Source
 Get-ChildItem -Path $SourceRootPath -Filter *.ps1 -Recurse | ForEach-Object {
   . $_.FullName
