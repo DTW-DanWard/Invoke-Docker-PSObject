@@ -8,11 +8,12 @@ Get-ChildItem -Path $SourceRootPath -Filter *.ps1 -Recurse | ForEach-Object {
 # use Zachary Loeber AST method to get names of public functions instead of storing/assuming function per file
 # https://www.the-little-things.net/blog/2015/10/03/powershell-thoughts-on-module-design/
 $PublicSourceRootPath = Join-Path -Path $SourceRootPath -ChildPath 'Public'
+[string[]]$FunctionNames = $null
 Get-ChildItem -Path $PublicSourceRootPath -Filter *.ps1 -Recurse | ForEach-Object {
   ([System.Management.Automation.Language.Parser]::ParseInput((Get-Content -Path $_.FullName -Raw), [ref]$null, [ref]$null)).FindAll( { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $false) | ForEach-Object {
-    Export-ModuleMember -Function $_.Name
+    $FunctionNames += $_.Name
   }
 }
 
-# also export alias id
-Export-ModuleMember -Alias id
+# export public function names and alias id
+Export-ModuleMember -Function $FunctionNames -Alias id
