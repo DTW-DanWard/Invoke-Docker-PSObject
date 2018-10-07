@@ -5,6 +5,7 @@ Set-StrictMode -Version Latest
 . $PSScriptRoot\Get-SourceScriptFilePath.ps1
 $SourceScript = Get-SourceScriptFilePath
 if ($null -eq $SourceScript) { exit }
+Write-Host "Reloading: $SourceScript"
 . $SourceScript
 
 

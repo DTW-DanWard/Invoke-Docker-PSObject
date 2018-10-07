@@ -16,20 +16,10 @@ function Get-SourceScriptFilePath {
   # get current test script name (the script calling this function)
   $TestScriptName = Split-Path -Path $MyInvocation.PSCommandPath -Leaf
   # source script is test script name minus .Tests
-  $SourceScriptName = $TestScriptName -replace '\.Tests',''
+  $SourceScriptName = $TestScriptName -replace '\.Tests', ''
 
-  # get module file, go up one folder and look for .psd1 file; make sure exactly one found
-  [object[]]$ModuleFile = Get-ChildItem -Path (Split-Path -Path $PSScriptRoot -Parent) -Include *.psd1 -Recurse
-  if ($ModuleFile.Count -eq 0) {
-    Write-Error -Message "No .psd1 file found in this module"
-    return
-  } elseif ($ModuleFile.Count -gt 1) {
-    Write-Error -Message "Multiple .psd1 files found in this module: $($ModuleFile.Name)"
-    return
-  }
-
-  # Source folder is located in folder that also contains module file
-  $SourceFolderPath = Join-Path -Path (Split-Path -Path ($ModuleFile[0].FullName) -Parent) -ChildPath 'Source'
+  # Source folder is located under Module folder
+  $SourceFolderPath = Join-Path -Path $env:BHModulePath -ChildPath 'Source'
   # confirm Source path is good
   if ($false -eq (Test-Path -Path $SourceFolderPath)) {
     Write-Error "Source path not found: $SourceFolderPath"
