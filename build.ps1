@@ -6,10 +6,14 @@ param(
 
 # Grab nuget bits, install modules, set build variables, start build.
 Get-PackageProvider -Name NuGet -ForceBootstrap | Out-Null
-Install-Module InvokeBuild, BuildHelpers, Pester, PSDeploy -Force
-Import-Module InvokeBuild, BuildHelpers
 
-Set-BuildEnvironment
+'InvokeBuild', 'BuildHelpers', 'Pester', 'PSDeploy' | ForEach-Object {
+  if ($null -eq (Get-Module -Name $_ -ListAvailable)) { Install-Module -Name $_ -Force }
+  Import-Module -Name $_
+}
+
+# only call if not set yet
+if ($null -eq (Get-BuildEnvironment)) { Set-BuildEnvironment }
 
 Invoke-Build -File .\Invoke-Docker-PSObject.build.ps1 -Task $Task -Result Result
 if ($Result.Error) {

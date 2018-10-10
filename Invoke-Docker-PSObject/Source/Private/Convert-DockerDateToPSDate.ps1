@@ -1,4 +1,13 @@
 
+<#
+.SYNOPSIS
+Converts Docker date string to DateTime object
+.DESCRIPTION
+Converts Docker date string to DateTime object, converting a string in the 
+format of yyyy-MM-dd HH:mm:ss to a DateTime object.  Removes timezone if found.
+.PARAMETER DockerDate
+Docker date string
+#>
 function Convert-DockerDateToPSDate {
   #region Function parameters
   [CmdletBinding()]
