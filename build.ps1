@@ -12,8 +12,8 @@ Get-PackageProvider -Name NuGet -ForceBootstrap | Out-Null
   Import-Module -Name $_
 }
 
-# only call if not set yet
-if ($null -eq (Get-BuildEnvironment)) { Set-BuildEnvironment }
+# only call Set-BuildEnvironment if BuildHelpers environment variables don't exist yet
+if ($false -eq (Test-Path env:BHBranchName)) { Set-BuildEnvironment }
 
 Invoke-Build -File .\Invoke-Docker-PSObject.build.ps1 -Task $Task -Result Result
 if ($Result.Error) {
