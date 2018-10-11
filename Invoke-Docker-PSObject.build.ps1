@@ -25,7 +25,7 @@ try {
 
 Set-StrictMode -Version Latest
 
-$ProjectRoot = $ENV:BHProjectPath
+$ProjectRoot = $env:BHProjectPath
 if (-not $ProjectRoot) {
   $ProjectRoot = $PSScriptRoot
 }
@@ -38,7 +38,7 @@ $Line = '-' * 70
 
 
 $Verbose = @{}
-if ($ENV:BHCommitMessage -match "!verbose") {
+if ($env:BHCommitMessage -match "!verbose") {
   $Verbose = @{Verbose = $True}
 }
 
@@ -50,7 +50,7 @@ task Init {
   $Line
   Set-Location $ProjectRoot
   "Build System Details:"
-  Get-Item ENV:BH*
+  Get-Item env:BH*
   "`n"
 }
 
@@ -62,7 +62,7 @@ task Test Init, {
   $TestResults = Invoke-Pester -Path $ProjectRoot\Tests -PassThru -OutputFormat NUnitXml -OutputFile "$ProjectRoot\$TestFile"
 
   # In Appveyor?  Upload our tests! #Abstract this into a function?
-  If ($ENV:BHBuildSystem -eq 'AppVeyor') {
+  If ($env:BHBuildSystem -eq 'AppVeyor') {
     (New-Object 'System.Net.WebClient').UploadFile(
       "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)",
       "$ProjectRoot\$TestFile" )

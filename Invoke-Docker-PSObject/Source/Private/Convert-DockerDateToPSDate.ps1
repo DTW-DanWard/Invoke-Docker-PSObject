@@ -7,6 +7,9 @@ Converts Docker date string to DateTime object, converting a string in the
 format of yyyy-MM-dd HH:mm:ss to a DateTime object.  Removes timezone if found.
 .PARAMETER DockerDate
 Docker date string
+.EXAMPLE
+Convert-DockerDateToPSDate '2018-08-12 18:13:50 -0400 EDT'
+Sunday, August 12, 2018 6:13:50 PM  (DateTime object)
 #>
 function Convert-DockerDateToPSDate {
   #region Function parameters
