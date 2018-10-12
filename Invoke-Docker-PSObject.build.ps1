@@ -1,12 +1,12 @@
 
 [CmdletBinding()]
+# Write-Host is used (shudder!) in the Pester test files
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSAvoidUsingWriteHost', '')]
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSAvoidUsingEmptyCatchBlock', '')]
 param()
 
-
-# adapted from Warren F's (ramblingcookiemonster) excellent PowerShell build/deploy utilties
-# and from JiraPS build/deploy Invoke-Build details
+# all the build/deploy code you see if adapted from from Warren F's (ramblingcookiemonster) excellent PowerShell build/deploy utilties
+# with a few details borrowed from JiraPS build/deploy Invoke-Build details
 
 $WarningPreference = "Continue"
 if ($PSBoundParameters.ContainsKey('Verbose')) {
@@ -15,13 +15,6 @@ if ($PSBoundParameters.ContainsKey('Verbose')) {
 if ($PSBoundParameters.ContainsKey('Debug')) {
   $DebugPreference = "Continue"
 }
-
-try {
-  $script:IsWindows = (-not (Get-Variable -Name IsWindows -ErrorAction Ignore)) -or $IsWindows
-  $script:IsLinux = (Get-Variable -Name IsLinux -ErrorAction Ignore) -and $IsLinux
-  $script:IsMacOS = (Get-Variable -Name IsMacOS -ErrorAction Ignore) -and $IsMacOS
-  $script:IsCoreCLR = $PSVersionTable.ContainsKey('PSEdition') -and $PSVersionTable.PSEdition -eq 'Core'
-} catch { }
 
 Set-StrictMode -Version Latest
 
@@ -34,8 +27,6 @@ $Timestamp = "{0:yyyyMMdd-HHmmss}" -f (Get-Date)
 $PSVersion = $PSVersionTable.PSVersion.Major
 $TestFile = "TestResults_PS$PSVersion`_$TimeStamp.xml"
 $Line = '-' * 70
-
-
 
 $Verbose = @{}
 if ($env:BHCommitMessage -match "!verbose") {
@@ -98,7 +89,7 @@ Task Build Test, {
 Task Deploy Build, {
   $Line
 
-  Write-Build Green "Not implemented yet!"
+  Write-Build Red "Not implemented yet!"
 
   # $Params = @{
   #     Path = $ProjectRoot

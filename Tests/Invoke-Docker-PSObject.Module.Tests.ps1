@@ -1,8 +1,8 @@
 
 
-# this file does not have tests for any specific file, it has tests across the entire module (all files) and
-# has tests for the module itself (items exported, etc.)
-
+# This file does not have tests for any specific file:
+#  - it has tests across all Source files in the module;
+#  - it has tests for the module itself (functions/aliases exported, etc.)
 
 
 $SourceRootPath = Join-Path -Path $env:BHModulePath -ChildPath 'Source'
@@ -13,6 +13,8 @@ Get-ChildItem -Path $SourceRootPath -Filter *.ps1 -Recurse | ForEach-Object {
   $SourceScripts += $_.FullName
 }
 
+
+#region Confirming all Source functions in the module have help defined
 Write-Host "Confirming all Source functions in the module have help defined"
 $SourceScripts | ForEach-Object {
   $SourceScript = $_
@@ -94,3 +96,4 @@ $SourceScripts | ForEach-Object {
     }
   }
 }
+#endregion
