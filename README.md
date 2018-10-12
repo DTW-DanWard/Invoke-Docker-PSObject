@@ -45,5 +45,5 @@ Saturday, October 6, 2018 11:01:41 AM
 ## Developer's Note
 I've been using this simple utility on my home machine for awhile.  When putting it online, though, I wanted to it this as an opportunity to create a module from complete scratch with all the latest and greatest PowerShell development techniques.  If you are new to module development or writing PowerShell with CI/CD and want something to review and learn, this project is a fairly small, self contained utility that features:
 * PowerShell Module Release Pipeline using [Warren F's awesome utilities](http://ramblingcookiemonster.github.io/PSDeploy-Inception/)
-* Copius Pester unit testing
+* Copious Pester unit testing
 * Lots of small stuff - like adding formatting to custom objects via ps1xml.  (You won't believe how many times I've been too ~~lazy~~ busy to actually add this to my projects.)
