@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Runs Docker command, returns PSObjects instead of strings
+Run Docker commands and get PSObjects not strings
 .DESCRIPTION
 For Docker commands that return tabular data - images, ps, history and port - 
 Invoke-DockerPSObject runs the Docker command, converts the results to PSObjects
@@ -18,13 +18,13 @@ the data and do the conversion.  If you run a Docker command and pass in the
 # legacy docker output first
 PS > docker ps -a
 CONTAINER ID   IMAGE         COMMAND   CREATED                  STATUS                      PORTS   NAMES
-a8b0bd9c9387   hello-world   "/hello"  34 seconds ago           Exited (0) 32 seconds ago           boring_mestorf
+a8b0bd9c9387   hello-world   "/hello"  34 seconds ago           Exited (0) 32 seconds ago           zen_khorana
 
 PS > # using Invoke-DockerPSObject
 PS > Invoke-DockerPSObject ps -a
 ID             Image         Command   CreatedAt                Status                      Ports   Names
 --             -----         -------   ---------                ------                      -----   -----
-a8b0bd9c9387   hello-world   "/hello"  10/11/2018 11:01:41 AM   Exited (0) 5 seconds ago            boring_mestorf
+a8b0bd9c9387   hello-world   "/hello"  10/11/2018 11:01:41 AM   Exited (0) 5 seconds ago            zen_khorana
 
 # notice the CreatedAt field output is a proper DateTime?
 
@@ -40,7 +40,7 @@ System.DateTime
 PS > id ps -a
 ID             Image         Command   CreatedAt                Status                      Ports   Names
 --             -----         -------   ---------                ------                      -----   -----
-a8b0bd9c9387   hello-world   "/hello"  10/11/2018 11:01:41 AM   Exited (0) 5 seconds ago            boring_mestorf
+a8b0bd9c9387   hello-world   "/hello"  10/11/2018 11:01:41 AM   Exited (0) 5 seconds ago            zen_khorana
 #>
 function Invoke-DockerPSObject {
 

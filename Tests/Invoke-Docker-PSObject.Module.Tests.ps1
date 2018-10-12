@@ -17,11 +17,13 @@ Write-Host "Confirming all Source functions in the module have help defined"
 $SourceScripts | ForEach-Object {
   $SourceScript = $_
   Write-Host "`n  Source script: $SourceScript"
+  $Functions = ([System.Management.Automation.Language.Parser]::ParseInput((Get-Content -Path $SourceScript -Raw), [ref]$null, [ref]$null)).FindAll( { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $false)
   Describe "Confirms all functions have help defined: Synopsis, Description, Parameters & Example" {
-    $Functions = ([System.Management.Automation.Language.Parser]::ParseInput((Get-Content -Path $SourceScript -Raw), [ref]$null, [ref]$null)).FindAll( { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $false)
+    
     It "confirms help section exists for each function" {
       $Functions | Where-Object { $null -eq $_.GetHelpContent() } | Select-Object Name | Should BeNullOrEmpty
     }
+
     It "confirms Synopsis field has content for each function" {
       $Functions | Where-Object { ($null -ne $_.GetHelpContent()) -and (($null -eq $_.GetHelpContent().Synopsis) -or ($_.GetHelpContent().Synopsis -eq '')) } | Select-Object Name | Should BeNullOrEmpty
     }
