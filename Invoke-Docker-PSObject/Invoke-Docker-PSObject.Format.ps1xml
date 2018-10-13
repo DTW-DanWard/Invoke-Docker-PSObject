@@ -2,11 +2,60 @@
 <Configuration>
   <ViewDefinitions>
 
-    <!-- Invoke-Docker-PSObject.images -->
+    <!-- Invoke-DockerPSObject.history -->
     <View>
       <Name>Default</Name>
       <ViewSelectedBy>
-        <TypeName>Invoke-Docker-PSObject.images</TypeName>
+        <TypeName>Invoke-DockerPSObject.history</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+            <Width>13</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Width>23</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Width>46</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Width>8</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Width>30</Width>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>ID</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CreatedAt</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CreatedBy</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Size</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Comment</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+
+
+    <!-- Invoke-DockerPSObject.images -->
+    <View>
+      <Name>Default</Name>
+      <ViewSelectedBy>
+        <TypeName>Invoke-DockerPSObject.images</TypeName>
       </ViewSelectedBy>
       <TableControl>
         <TableHeaders>
@@ -51,11 +100,11 @@
     </View>
 
 
-    <!-- Invoke-Docker-PSObject.ps -->
+    <!-- Invoke-DockerPSObject.ps -->
     <View>
       <Name>Default</Name>
       <ViewSelectedBy>
-        <TypeName>Invoke-Docker-PSObject.ps</TypeName>
+        <TypeName>Invoke-DockerPSObject.ps</TypeName>
       </ViewSelectedBy>
       <TableControl>
         <TableHeaders>

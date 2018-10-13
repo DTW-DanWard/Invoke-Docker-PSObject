@@ -75,8 +75,8 @@ function Invoke-DockerPSObject {
   #region Add type name (for Format.ps1xml), set datetime field to PowerShell date and return object
   $PSObjects | ForEach-Object {
 
-    # add type name to PSObject for matching in Invoke-Docker.Format.ps1xml file
-    $_.PSObject.TypeNames.Insert(0, 'Invoke-Docker-PSObject.' + $SubCmd)
+    # add type name to PSObject for matching in Invoke-Docker-PSObject.Format.ps1xml file
+    $_.PSObject.TypeNames.Insert(0, 'Invoke-DockerPSObject.' + $SubCmd)
 
     # CreatedAt date info for 'docker ps' and 'docker images' is in a format that doesn't get auto converted to PowerShell date
     # during the --format json call but, strangely, docker history CreatedAt does

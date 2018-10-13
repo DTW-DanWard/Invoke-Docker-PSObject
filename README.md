@@ -2,10 +2,10 @@ Note: this is still in development - but close to completion - in case you stumb
 
 master: [![Build status](https://ci.appveyor.com/api/projects/status/1m6rgmj4h3p8m20q/branch/master?svg=true)](https://ci.appveyor.com/project/DTW-DanWard/invoke-docker-psobject/branch/master)   develop: [![Build status](https://ci.appveyor.com/api/projects/status/1m6rgmj4h3p8m20q/branch/develop?svg=true)](https://ci.appveyor.com/project/DTW-DanWard/invoke-docker-psobject/branch/develop)
 
-# Invoke-Docker-PSObject
-Invoke-Docker-PSObject runs Docker CLI commands in PowerShell but instead of returning an array of strings it returns proper PSObjects that you can use to filter, sort, return a specific member, etc.
+# Invoke-DockerPSObject
+Invoke-DockerPSObject runs Docker CLI commands in PowerShell but instead of returning an array of strings it returns proper PSObjects that you can use to filter, sort, return a specific member, etc.
 
-Invoke-Docker-PSObject returns PSObjects for Docker commands that return tabular data, i.e. `docker images`, `docker ps`, `docker history` and `docker port`. For all other docker commands it runs the docker command and returns the results as-is.
+Invoke-DockerPSObject returns PSObjects for Docker commands that return tabular data, i.e. `docker images`, `docker ps`, `docker history` and `docker port`. For all other docker commands it runs the docker command and returns the results as-is.
 
 `Invoke-DockerPSObject` is a lot of text to type so the module includes alias: **`id`**
 
