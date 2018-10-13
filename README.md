@@ -5,7 +5,7 @@ master: [![Build status](https://ci.appveyor.com/api/projects/status/1m6rgmj4h3p
 # Invoke-DockerPSObject
 Invoke-DockerPSObject runs Docker CLI commands in PowerShell but instead of returning an array of strings it returns proper PSObjects that you can use to filter, sort, return a specific member, etc.
 
-Invoke-DockerPSObject returns PSObjects for Docker commands that return tabular data, i.e. `docker images`, `docker ps`, `docker history` and `docker port`. For all other docker commands it runs the docker command and returns the results as-is.
+Invoke-DockerPSObject returns PSObjects for Docker commands that return tabular data, i.e. `docker images`, `docker ps` and `docker history`. For all other docker commands it runs the docker command and returns the results as-is.
 
 `Invoke-DockerPSObject` is a lot of text to type so the module includes alias: **`id`**
 

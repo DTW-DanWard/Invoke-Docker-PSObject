@@ -2,7 +2,7 @@
 .SYNOPSIS
 Run Docker commands and get PSObjects not strings
 .DESCRIPTION
-For Docker commands that return tabular data - images, ps, history and port - 
+For Docker commands that return tabular data - images, ps and history - 
 Invoke-DockerPSObject runs the Docker command, converts the results to PSObjects
 and returns them.  It also converts the Docker date time info from a string to
 a DateTime object and size info from string to a number in KB so you can sort &
@@ -46,10 +46,10 @@ function Invoke-DockerPSObject {
 
 
   #region Run docker command and capture results in $PSObjects
-  # note: only do this for these docker sub-commands: images, ps, history, port
+  # note: only do this for these docker sub-commands: images, ps and history
   # otherwise data is not tabular/worth/possible to convert to PSObjects
   # also, don't do this if user has passed in their own --format parameter
-  $ValidSubCmds = 'images', 'ps', 'history', 'port'
+  $ValidSubCmds = 'images', 'ps', 'history'
   $Cmd = "docker"
   $SubCmd = $args[0]
   # we don't process every Docker request; for ones we don't we invoke docker args without modificatino and return as-is
