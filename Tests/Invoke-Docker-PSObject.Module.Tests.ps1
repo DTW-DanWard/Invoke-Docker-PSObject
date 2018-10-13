@@ -20,7 +20,7 @@ $SourceScripts | ForEach-Object {
   $SourceScript = $_
   Write-Host "`n  Source script: $SourceScript"
   $Functions = ([System.Management.Automation.Language.Parser]::ParseInput((Get-Content -Path $SourceScript -Raw), [ref]$null, [ref]$null)).FindAll( { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $false)
-  Describe "Confirms all functions have help defined: Synopsis, Description, Parameters & Example" {
+  Describe "Confirm all functions have help defined: Synopsis, Description, Parameters & Example" {
     
     It "confirms help section exists for each function" {
       $Functions | Where-Object { $null -eq $_.GetHelpContent() } | Select-Object Name | Should BeNullOrEmpty

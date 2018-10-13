@@ -3,9 +3,9 @@ Note: this is still in development - but close to completion - in case you stumb
 master: [![Build status](https://ci.appveyor.com/api/projects/status/1m6rgmj4h3p8m20q/branch/master?svg=true)](https://ci.appveyor.com/project/DTW-DanWard/invoke-docker-psobject/branch/master)   develop: [![Build status](https://ci.appveyor.com/api/projects/status/1m6rgmj4h3p8m20q/branch/develop?svg=true)](https://ci.appveyor.com/project/DTW-DanWard/invoke-docker-psobject/branch/develop)
 
 # Invoke-DockerPSObject
-Invoke-DockerPSObject runs Docker CLI commands in PowerShell but instead of returning an array of strings it returns proper PSObjects that you can use to filter, sort, return a specific member, etc.
+Invoke-DockerPSObject is a simple function that runs Docker CLI commands in PowerShell but instead of returning an array of strings it returns proper PSObjects.  You can use these objects to filter, sort, return a specific member, etc. like any object in PowerShell.
 
-Invoke-DockerPSObject returns PSObjects for Docker commands that return tabular data, i.e. `docker images`, `docker ps` and `docker history`. For all other docker commands it runs the docker command and returns the results as-is.
+Invoke-DockerPSObject returns PSObjects for Docker commands that return tabular data, i.e. `docker images`, `docker ps` and `docker history`. For all other docker commands Invoke-DockerPSObject will still run the docker command but just returns the standard docker output as-is.
 
 `Invoke-DockerPSObject` is a lot of text to type so the module includes alias: **`id`**
 
@@ -57,6 +57,6 @@ Saturday, October 6, 2018 11:01:41 AM
 
 ## Developer's Note
 I've been using this simple utility on my home machine for awhile.  When finally putting it online, though, I wanted to use this as an opportunity to create a module from complete scratch with all the latest and greatest PowerShell development techniques.  If you are new to module development or writing PowerShell with CI/CD and want something to review and learn, this project is a fairly small, self-contained utility that features:
-* PowerShell Module Release Pipeline using [Warren F's awesome utilities](http://ramblingcookiemonster.github.io/PSDeploy-Inception/)
-* Copious Pester unit testing
-* Lots of small stuff like dynamically loading/exporting Private/Public functions and custom object output formatting via ps1xml.  (You won't believe how many times I've been too ~~lazy~~ busy to actually add this to my projects.)
+* PowerShell module release pipeline using [Warren F's awesome utilities](http://ramblingcookiemonster.github.io/PSDeploy-Inception/) to automatically build on AppVeyor and deploy to PS Gallery;
+* copious Pester unit testing;
+* lots of small stuff like dynamically loading/exporting Private/Public functions and custom object output formatting via ps1xml.  (You won't believe how many times I've been too ~~lazy~~ busy to actually add this to my projects.)
