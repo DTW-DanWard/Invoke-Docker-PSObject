@@ -1,3 +1,12 @@
+
+# make sure BuildHelpers is installed and loaded; it will be when this is called from
+# standard build process but do it just in case manually testing a single file's tests individually
+$ModuleName = 'BuildHelpers'
+if ($null -eq (Get-Module -Name $ModuleName -ListAvailable)) { Install-Module -Name $ModuleName -Force }
+# make sure BH variables loaded, need to specify default project folder one level up
+if ($false -eq (Test-Path env:BHBranchName)) { Set-BuildEnvironment -Path ..}
+
+
 #region Function: Get-SourceScriptFilePath
 
 <#
