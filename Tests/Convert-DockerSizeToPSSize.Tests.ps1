@@ -14,8 +14,14 @@ Write-Host "Re/loading: $SourceScript"
 #region Converts Docker size string to double type in KB
 Describe "Convert Docker size string value to type double object in unit KB" {
   #region Validates returns type double
+  It "accepts valid Docker size string in B and returns a double" {
+    [double]$Size = 100
+    [string]$SizeString = $Size.ToString() + 'B'
+    Convert-DockerSizeToPSSize $SizeString | Should BeOfType 'double'
+  }
+
   It "accepts valid Docker size string in KB and returns a double" {
-    [double]$Size = 123
+    [double]$Size = 100
     [string]$SizeString = $Size.ToString() + 'kB'
     Convert-DockerSizeToPSSize $SizeString | Should BeOfType 'double'
   }
@@ -34,6 +40,12 @@ Describe "Convert Docker size string value to type double object in unit KB" {
   #endregion
 
   #region Validates returns converted number
+  It "converts valid Docker size string in B to KB" {
+    [double]$Size = 512
+    [string]$SizeString = $Size.ToString() + 'B'
+    Convert-DockerSizeToPSSize $SizeString | Should Be ($Size / 1KB)
+  }
+
   It "converts valid Docker size string in KB to KB" {
     [double]$Size = 100
     [string]$SizeString = $Size.ToString() + 'kB'
@@ -43,13 +55,13 @@ Describe "Convert Docker size string value to type double object in unit KB" {
   It "converts valid Docker size string in MB to KB" {
     [double]$Size = 100
     [string]$SizeString = $Size.ToString() + 'MB'
-    Convert-DockerSizeToPSSize $SizeString | Should Be ($Size * 1MB)
+    Convert-DockerSizeToPSSize $SizeString | Should Be ($Size * 1KB)
   }
 
   It "converts valid Docker size string in GB to KB" {
     [double]$Size = 100
     [string]$SizeString = $Size.ToString() + 'GB'
-    Convert-DockerSizeToPSSize $SizeString | Should Be ($Size * 1GB)
+    Convert-DockerSizeToPSSize $SizeString | Should Be ($Size * 1MB)
   }
   #endregion
 }

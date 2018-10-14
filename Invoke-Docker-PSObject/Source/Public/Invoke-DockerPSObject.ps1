@@ -78,14 +78,11 @@ function Invoke-DockerPSObject {
     # add type name to PSObject for matching in Invoke-Docker-PSObject.Format.ps1xml file
     $_.PSObject.TypeNames.Insert(0, 'Invoke-DockerPSObject.' + $SubCmd)
 
-    # CreatedAt date info for 'docker ps' and 'docker images' is in a format that doesn't get auto converted to PowerShell date
-    # during the --format json call but, strangely, docker history CreatedAt does
-    # so only do this for commands that fail
-    if (('ps', 'images') -contains $SubCmd) {
-      $_.CreatedAt = Convert-DockerDateToPSDate -DockerDate ($_.CreatedAt)
-    }
+    # convert preexisting CreatedAt field to DateTime (or ensure it already is one)
+    $_.CreatedAt = Convert-DockerDateToPSDate -DockerDate ($_.CreatedAt)
+    # add field SizeKB based on converted value in Size
+    Add-Member -InputObject $_ -MemberType NoteProperty -Name SizeKB -Value (Convert-DockerSizeToPSSize -DockerSize $_.Size)
     $_
   }
   #endregion
 }
-New-Alias -Name id -Value Invoke-DockerPSObject

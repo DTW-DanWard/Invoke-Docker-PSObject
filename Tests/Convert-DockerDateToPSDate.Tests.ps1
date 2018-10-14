@@ -20,6 +20,12 @@ Describe "convert Docker date string to System.DateTime object" {
   It "converts valid Docker date strings with no timezone" {
     Convert-DockerDateToPSDate '2018-07-19 20:39:27' | Should BeOfType 'datetime'
   }
+
+  It "keeps valid DateTime object as-is" {
+    $SampleDate = Get-Date '01/01/2018 06:00:00'
+    Convert-DockerDateToPSDate $SampleDate | Should BeExactly $SampleDate
+  }
+
 }
 #endregion
 

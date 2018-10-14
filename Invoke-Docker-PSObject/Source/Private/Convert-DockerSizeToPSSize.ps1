@@ -27,10 +27,11 @@ function Convert-DockerSizeToPSSize {
   )
   #endregion
   process {
+    $UnitB = 'B'
     $UnitKB = 'KB'
     $UnitMB = 'MB'
     $UnitGB = 'GB'
-    $ValidUnits = $UnitKB, $UnitMB, $UnitGB
+    $ValidUnits = $UnitB, $UnitKB, $UnitMB, $UnitGB
     #region Notes about Docker size string and validation/conversion
     # Examples of Docker size: 1.84kB, 123MB
     # I have not personally encounterd a Docker image that is gigabytes in size (I hope they are rare) so
@@ -62,10 +63,11 @@ function Convert-DockerSizeToPSSize {
     }
 
     # convert between units (MB -> KB or GB -> KB) and return value
-    # KB -> KB conversation is completely unnecessary but pleasing in a symmetic way
+    # KB -> KB conversation * 1 is completely unnecessary but pleasing in a symmetic way
     # no need for else block, units validated above
-    if ($Unit -eq 'KB') { $Number * 1 }
-    elseif ($Unit -eq 'MB') { $Number * 1MB }
-    elseif ($Unit -eq 'GB') { $Number * 1GB }
+    if ($Unit -eq $UnitB) { $Number / 1KB }
+    elseif ($Unit -eq $UnitKB) { $Number * 1 }
+    elseif ($Unit -eq $UnitMB) { $Number * 1KB }
+    elseif ($Unit -eq $UnitGB) { $Number * 1MB }
   }
 }

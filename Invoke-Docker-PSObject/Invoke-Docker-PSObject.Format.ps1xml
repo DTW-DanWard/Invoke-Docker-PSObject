@@ -20,7 +20,7 @@
             <Width>46</Width>
           </TableColumnHeader>
           <TableColumnHeader>
-            <Width>8</Width>
+            <Width>10</Width>
           </TableColumnHeader>
           <TableColumnHeader>
             <Width>30</Width>
@@ -39,7 +39,7 @@
                 <PropertyName>CreatedBy</PropertyName>
               </TableColumnItem>
               <TableColumnItem>
-                <PropertyName>Size</PropertyName>
+                <PropertyName>SizeKB</PropertyName>
               </TableColumnItem>
               <TableColumnItem>
                 <PropertyName>Comment</PropertyName>
@@ -72,7 +72,7 @@
             <Width>23</Width>
           </TableColumnHeader>
           <TableColumnHeader>
-            <Width>8</Width>
+            <Width>10</Width>
           </TableColumnHeader>
         </TableHeaders>
         <TableRowEntries>
@@ -91,7 +91,7 @@
                 <PropertyName>CreatedAt</PropertyName>
               </TableColumnItem>
               <TableColumnItem>
-                <PropertyName>Size</PropertyName>
+                <PropertyName>SizeKB</PropertyName>
               </TableColumnItem>
             </TableColumnItems>
           </TableRowEntry>
