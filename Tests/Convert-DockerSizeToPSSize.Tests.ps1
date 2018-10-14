@@ -12,8 +12,8 @@ Write-Host "Re/loading: $SourceScript"
 
 
 #region Converts Docker size string to double type in KB
-Describe "Convert Docker size string to double object in KB" {
-  #region Validates returns type double correct
+Describe "Convert Docker size string value to type double object in unit KB" {
+  #region Validates returns type double
   It "accepts valid Docker size string in KB and returns a double" {
     [double]$Size = 123
     [string]$SizeString = $Size.ToString() + 'kB'
@@ -33,55 +33,69 @@ Describe "Convert Docker size string to double object in KB" {
   }
   #endregion
 
-  #region Validates returns converted number correctly
-  It "converts valid Docker size string in KB to KB correctly" {
+  #region Validates returns converted number
+  It "converts valid Docker size string in KB to KB" {
     [double]$Size = 100
     [string]$SizeString = $Size.ToString() + 'kB'
     Convert-DockerSizeToPSSize $SizeString | Should Be $Size
   }
 
-  It "converts valid Docker size string in MB to KB correctly" {
+  It "converts valid Docker size string in MB to KB" {
     [double]$Size = 100
     [string]$SizeString = $Size.ToString() + 'MB'
     Convert-DockerSizeToPSSize $SizeString | Should Be ($Size * 1MB)
   }
 
-  It "converts valid Docker size string in GB to KB correctly" {
+  It "converts valid Docker size string in GB to KB" {
     [double]$Size = 100
     [string]$SizeString = $Size.ToString() + 'GB'
     Convert-DockerSizeToPSSize $SizeString | Should Be ($Size * 1GB)
   }
-
-  # asdf need to test GB here
-
   #endregion
-
 }
 #endregion
 
 
-
-# need tests for nothing passed
-
-# need tests for incorrect type passed
-
-# need tests for no number passed
-
-# need tests for incorrect number passed (also multple . in number)
-
-# need tests for no suffix, invalid suffix
-
-
-<#
-#region Throws exceptions for invalid date strings
-Describe "Throw exceptions for invalid date strings" {
-  It "throws errors for non-Docker date strings" {
-    { Convert-DockerDateToPSDate 'Saturday, October 6, 2018 9:19:27 PM' } | Should throw
+#region Throws exceptions for invalid size values
+Describe "Throw exceptions for invalid size values" {
+  It "throws error if null passed" {
+    { Convert-DockerSizeToPSSize $null } | Should throw
   }
 
-  It "throws errors for completely invalid date strings" {
-    { Convert-DockerDateToPSDate 'NOT_VALID_DATE_STRING' } | Should throw
+  It "throws error if empty string passed" {
+    { Convert-DockerSizeToPSSize '' } | Should throw
+  }
+
+  It "throws error if only spaces passed" {
+    { Convert-DockerSizeToPSSize '   ' } | Should throw
+  }
+
+  It "throws error if 1 letter passed" {
+    { Convert-DockerSizeToPSSize 'W' } | Should throw
+  }
+
+  It "throws error if completely invalid value passed" {
+    { Convert-DockerSizeToPSSize 'ABC123XYZ' } | Should throw
+  }
+
+  It "throws error if no number passed just valid suffix" {
+    { Convert-DockerSizeToPSSize 'kb' } | Should throw
+  }
+
+  It "throws error if no number passed just invalid suffix" {
+    { Convert-DockerSizeToPSSize 'Qb' } | Should throw
+  }
+
+  It "throws error if valid number passed but no suffix" {
+    { Convert-DockerSizeToPSSize '100' } | Should throw
+  }
+
+  It "throws error if number invalid - multiple . - but valid suffix" {
+    { Convert-DockerSizeToPSSize '100.100.10MB' } | Should throw
+  }
+
+  It "throws error if number invalid - junk number - but valid suffix" {
+    { Convert-DockerSizeToPSSize '55ZZ55MB' } | Should throw
   }
 }
 #endregion
-#>
