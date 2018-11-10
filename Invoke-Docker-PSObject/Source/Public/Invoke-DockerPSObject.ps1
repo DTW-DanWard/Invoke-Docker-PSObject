@@ -64,20 +64,14 @@ function Invoke-DockerPSObject {
 
   $args += '--format', '{{ json . }}'
   $Results = & $Cmd $args
-  if ($null -ne $Results -and $Results.ToString().Trim() -ne '') {
-    $PSObjects = $Results | ConvertFrom-Json
-  } else {
-    $null
-    return
-  }
+  # convert Results from json to PSObjects
+  $Results = $Results | ConvertFrom-Json
   #endregion
 
-  #region Add type name (for Format.ps1xml), set datetime field to PowerShell date and return object
-  $PSObjects | ForEach-Object {
-
-    # add type name to PSObject for matching in Invoke-Docker-PSObject.Format.ps1xml file
+  #region Add type name (for Format.ps1xml), set datetime field to PowerShell date, add SizeKB and return object
+  $Results | ForEach-Object {
+    # add unique type name based on Docker command type to PSObject for matching in Invoke-Docker-PSObject.Format.ps1xml file
     $_.PSObject.TypeNames.Insert(0, 'Invoke-DockerPSObject.' + $SubCmd)
-
     # convert preexisting CreatedAt field to DateTime (or ensure it already is one)
     $_.CreatedAt = Convert-DockerDateToPSDate -DockerDate ($_.CreatedAt)
     # add field SizeKB based on converted value in Size
