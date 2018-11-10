@@ -40,7 +40,7 @@ task . Test
 task Init {
   $Line
   Set-Location $ProjectRoot
-  "Build System Details:"
+  'Build System Details:'
   Get-Item env:BH*
   "`n"
 }
@@ -89,7 +89,7 @@ Task Build Test, {
 Task Deploy Build, {
   $Line
 
-  Write-Build Red "Not implemented yet!"
+  Write-Build Red 'Not implemented yet!'
 
   # $Params = @{
   #     Path = $ProjectRoot

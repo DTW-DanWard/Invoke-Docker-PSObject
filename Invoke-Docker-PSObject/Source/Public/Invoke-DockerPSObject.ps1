@@ -50,7 +50,7 @@ function Invoke-DockerPSObject {
   # otherwise data is not tabular/worth/possible to convert to PSObjects
   # also, don't do this if user has passed in their own --format parameter
   $ValidSubCmds = 'images', 'ps', 'history'
-  $Cmd = "docker"
+  $Cmd = 'docker'
   $SubCmd = $args[0]
   # we don't process every Docker request; for ones we don't we invoke docker args without modificatino and return as-is
   # these are the Docker requests we skip:

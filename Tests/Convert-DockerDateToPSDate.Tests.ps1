@@ -12,16 +12,16 @@ Write-Host "Re/loading: $SourceScript"
 
 
 #region Converts Docker date string to System.DateTime object
-Describe "convert Docker date string to System.DateTime object" {
-  It "converts valid Docker date strings with timezone" {
+Describe 'convert Docker date string to System.DateTime object' {
+  It 'converts valid Docker date strings with timezone' {
     Convert-DockerDateToPSDate '2018-07-19 20:39:27 -0400 EDT' | Should BeOfType 'datetime'
   }
 
-  It "converts valid Docker date strings with no timezone" {
+  It 'converts valid Docker date strings with no timezone' {
     Convert-DockerDateToPSDate '2018-07-19 20:39:27' | Should BeOfType 'datetime'
   }
 
-  It "keeps valid DateTime object as-is" {
+  It 'keeps valid DateTime object as-is' {
     $SampleDate = Get-Date '01/01/2018 06:00:00'
     Convert-DockerDateToPSDate $SampleDate | Should BeExactly $SampleDate
   }
@@ -31,12 +31,12 @@ Describe "convert Docker date string to System.DateTime object" {
 
 
 #region Throws exceptions for invalid date strings
-Describe "throw exceptions for invalid date strings" {
-  It "throws errors for non-Docker date strings" {
+Describe 'throw exceptions for invalid date strings' {
+  It 'throws errors for non-Docker date strings' {
     { Convert-DockerDateToPSDate 'Saturday, October 6, 2018 9:19:27 PM' } | Should throw
   }
 
-  It "throws errors for completely invalid date strings" {
+  It 'throws errors for completely invalid date strings' {
     { Convert-DockerDateToPSDate 'NOT_VALID_DATE_STRING' } | Should throw
   }
 }
