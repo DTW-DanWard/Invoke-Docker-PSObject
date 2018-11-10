@@ -48,7 +48,7 @@ task Init {
   "`n"
 }
 
-# Synopsis: Run unit tests
+# Synopsis: Run unit tests in current PowerShell instance
 task Test Init, {
   $Line
   "`nTesting with PowerShell $PSVersion"
@@ -72,8 +72,37 @@ task Test Init, {
   "`n"
 }
 
+# Synopsis: Run unit tests in PowerShell Core Ubuntu Docker instance
+task Test_Ubuntu {
+  $Line
+  "`nTesting PowerShell in Ubuntu container"
+
+  # this should only be run on local developer machine, not on build server, and should not be a
+  # required part of the deployment to PowerShell Gallery
+  if ($env:BHBuildSystem -ne 'Unknown') { Write-Error 'Task Test_MultiOS should only be run on local dev machine' }
+
+  # simple hard-coded version for now; use Ubuntu 16.04 on local machine
+  $ContainerName = 'TestContainer'
+  "`nStop and remove container with name: $ContainerName"
+  docker stop $ContainerName
+  docker rm $ContainerName
+  "`nCreate new container and start (non-interactive):"
+  docker run -t -d --name $ContainerName microsoft/powershell:ubuntu-16.04
+  "`napt-get update"
+  docker exec $ContainerName pwsh -Command "& { apt-get update }"
+  '`napt-get install git-core'
+  docker exec $ContainerName pwsh -Command "& { apt-get --assume-yes install git-core }"
+  "`nCopy $ProjectRoot to $ContainerName"
+  docker cp $ProjectRoot ($ContainerName + ':/tmp')
+  docker start $ContainerName
+  "`nRun /build.ps1 Test"
+  # Invoke-Build fails if the /build.ps1 command is not run relative to the project - from the project root
+  docker exec $ContainerName pwsh -Command "& { cd /tmp/Invoke-Docker-PSObject; ./build.ps1 }"
+  docker stop $ContainerName
+}
+
 # Synopsis: Run PSScriptAnalyzer on PowerShell code files
-Task Analyze {
+Task Analyze Init, {
   $Line
   "`nRunning PSScriptAnalyzer"
 
@@ -87,6 +116,8 @@ Task Analyze {
     }
   }
 }
+
+
 
 # Synopsis: Set public functions in PSD, increment version
 Task Build Test, Analyze, {

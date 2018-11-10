@@ -8,7 +8,8 @@ param(
 Get-PackageProvider -Name NuGet -ForceBootstrap | Out-Null
 
 'InvokeBuild', 'BuildHelpers', 'Pester', 'PSScriptAnalyzer', 'PSDeploy' | ForEach-Object {
-  if ($null -eq (Get-Module -Name $_ -ListAvailable)) { Install-Module -Name $_ -Force }
+  $ProgressPreference = 'SilentlyContinue'
+  if ($null -eq (Get-Module -Name $_ -ListAvailable)) { Install-Module -Name $_ -Force -AllowClobber }
   Import-Module -Name $_
 }
 
