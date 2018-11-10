@@ -2,15 +2,15 @@
 .SYNOPSIS
 Run Docker commands and get PSObjects not strings
 .DESCRIPTION
-For Docker commands that return tabular data - images, ps and history - 
+For Docker commands that return tabular data - images, ps and history -
 Invoke-DockerPSObject runs the Docker command, converts the results to PSObjects
 and returns them.  It also converts the Docker date time info from a string to
 a DateTime object and size info from string to a number in KB so you can sort &
 filter by these properties.
 For Docker commands that do not return tabular data, it runs the Docker command
 and returns the results as-is.
-Note: Invoke-DockerPSObject uses the docker --format parameter in order to get 
-the data and do the conversion.  If you run a Docker command and pass in the 
+Note: Invoke-DockerPSObject uses the docker --format parameter in order to get
+the data and do the conversion.  If you run a Docker command and pass in the
 --format parameter Invoke-DockerPSObject will not convert, returning results as-is.
 
 'Invoke-DockerPSObject' is a lot to type so an alias is created for it: id

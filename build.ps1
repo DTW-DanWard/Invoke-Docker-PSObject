@@ -7,7 +7,7 @@ param(
 # Grab nuget bits, install modules, set build variables, start build.
 Get-PackageProvider -Name NuGet -ForceBootstrap | Out-Null
 
-'InvokeBuild', 'BuildHelpers', 'Pester', 'PSDeploy' | ForEach-Object {
+'InvokeBuild', 'BuildHelpers', 'Pester', 'PSScriptAnalyzer', 'PSDeploy' | ForEach-Object {
   if ($null -eq (Get-Module -Name $_ -ListAvailable)) { Install-Module -Name $_ -Force }
   Import-Module -Name $_
 }

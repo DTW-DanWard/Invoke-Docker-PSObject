@@ -34,7 +34,7 @@ function Get-SourceScriptFilePath {
     Write-Error "Source path not found: $SourceFolderPath"
     return
   }
-  
+
   # now find $SourceScriptName under Source; make sure exactly one found
   [object[]]$SourceFile = Get-ChildItem -Path $SourceFolderPath -Include $SourceScriptName -Recurse
   if ($SourceFile.Count -eq 0) {

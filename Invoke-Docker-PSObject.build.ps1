@@ -33,10 +33,13 @@ if ($env:BHCommitMessage -match "!verbose") {
   $Verbose = @{Verbose = $True}
 }
 
-
+# Synopsis: By default run Test
 task Default Test
-task . Test
 
+# Synopsis: List tasks in this build file
+task . { Invoke-Build ? }
+
+# Synopsis: Initialze build helpers and displays settings
 task Init {
   $Line
   Set-Location $ProjectRoot
@@ -45,9 +48,10 @@ task Init {
   "`n"
 }
 
+# Synopsis: Run unit tests
 task Test Init, {
   $Line
-  "`nSTATUS: Testing with PowerShell $PSVersion"
+  "`nTesting with PowerShell $PSVersion"
 
   # Gather test results. Store them in a variable and file
   $TestResults = Invoke-Pester -Path $ProjectRoot\Tests -PassThru -OutputFormat NUnitXml -OutputFile "$ProjectRoot\$TestFile"
@@ -68,7 +72,24 @@ task Test Init, {
   "`n"
 }
 
-Task Build Test, {
+# Synopsis: Run PSScriptAnalyzer on PowerShell code files
+Task Analyze {
+  $Line
+  "`nRunning PSScriptAnalyzer"
+
+  # run script analyzer on all files EXCEPT build files in project root
+  Get-ChildItem -Path $ProjectRoot -Recurse | Where-Object { @('.ps1', '.psm1') -contains $_.Extension -and $_.DirectoryName -ne $ProjectRoot } | ForEach-Object {
+    $Results = Invoke-ScriptAnalyzer -Path $_.FullName
+    if ($null -ne $Results) {
+      Write-Host "Bad results found for: $($_.Name)"
+      $Results
+      Write-Error "Fix ScriptAnalyzer results above"
+    }
+  }
+}
+
+# Synopsis: Set public functions in PSD, increment version
+Task Build Test, Analyze, {
   $Line
 
   # Load the module, read the exported functions, update the psd1 FunctionsToExport
@@ -86,6 +107,7 @@ Task Build Test, {
   }
 }
 
+# Synopsis: Build and deploy module to PowerShell Gallery
 Task Deploy Build, {
   $Line
 

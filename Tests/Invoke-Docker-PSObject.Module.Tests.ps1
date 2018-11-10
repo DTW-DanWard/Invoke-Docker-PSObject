@@ -15,13 +15,12 @@ Get-ChildItem -Path $SourceRootPath -Filter *.ps1 -Recurse | ForEach-Object {
 
 
 #region Confirming all Source functions in the module have help defined
-Write-Host 'Confirming all Source functions in the module have help defined'
 $SourceScripts | ForEach-Object {
   $SourceScript = $_
-  Write-Host "`n  Source script: $SourceScript"
+  Describe "Source script: $SourceScript" { }
   $Functions = ([System.Management.Automation.Language.Parser]::ParseInput((Get-Content -Path $SourceScript -Raw), [ref]$null, [ref]$null)).FindAll( { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $false)
   Describe 'Confirm all functions have help defined: Synopsis, Description, Parameters & Example' {
-    
+
     It 'confirms help section exists for each function' {
       $Functions | Where-Object { $null -eq $_.GetHelpContent() } | Select-Object Name | Should BeNullOrEmpty
     }
@@ -43,27 +42,27 @@ $SourceScripts | ForEach-Object {
     }
 
     # at this point, either parameters are defined in BOTH help & function or neither, values might not be the same but
-    # at least we can safely check Help parameters key count without throwing an error to filter out functions with no 
+    # at least we can safely check Help parameters key count without throwing an error to filter out functions with no
     # parameter defined anywhere; we'll use this Keys.Count -gt 0 in our remaining parameters tests
     It 'confirms Parameter count in help matches defined parameter count on function' {
       $Functions | Where-Object { $_.GetHelpContent().Parameters.Keys.Count -gt 0 } | ForEach-Object {
         if ($_.GetHelpContent().Parameters.Keys.Count -ne $_.Body.ParamBlock.Parameters.Count) { $_.Name }
       } | Should BeNullOrEmpty
     }
-  
+
     It 'confirms Parameter name(s) in help matches defined parameter name(s) on function' {
       $Functions | Where-Object { $_.GetHelpContent().Parameters.Keys.Count -gt 0 } | ForEach-Object {
         $Function = $_
         # only do if parameters actually defined on function (else .Name will fail with null error)
         if ($Function.Body.ParamBlock.Parameters.Count -gt 0) {
-          # use string expansion to get values as strings; 
+          # use string expansion to get values as strings;
           $HelpParameters = "$($Function.GetHelpContent().Parameters.Keys | Sort-Object)"
           $DefinedParameters = "$($Function.Body.ParamBlock.Parameters.Name.VariablePath.UserPath | Sort-Object)"
           if ($HelpParameters -ne $DefinedParameters) { $_.Name }
         }
       } | Should BeNullOrEmpty
     }
-  
+
     It 'confirms Parameter(s) have content for each function' {
       $Functions | Where-Object { $_.GetHelpContent().Parameters.Keys.Count -gt 0 } | ForEach-Object {
         $Function = $_
@@ -72,23 +71,25 @@ $SourceScripts | ForEach-Object {
           $EmptyContentFound = $false
           $Function.GetHelpContent().Parameters.Keys | ForEach-Object {
             $ParamName = $_
-            if ($Function.GetHelpContent().Parameters[$ParamName] -eq '') { $EmptyContentFound = $true }
+            # making EmptyContentFound script scope to avoid stupid PSScriptAnalyzer error
+            if ($Function.GetHelpContent().Parameters[$ParamName] -eq '') { $script:EmptyContentFound = $true }
           }
           if ($EmptyContentFound -eq $true) { $_.Name + ':' + $ParamName }
         }
       } | Should BeNullOrEmpty
     }
-  
+
     It 'confirms at least one Example field for each function' {
       $Functions | Where-Object { ($null -ne $_.GetHelpContent()) -and ($_.GetHelpContent().Examples.Count -eq 0) } | Select-Object Name | Should BeNullOrEmpty
     }
-  
+
     It 'confirms Example field(s) have content' {
       $Functions | Where-Object { ($null -ne $_.GetHelpContent()) -and ($_.GetHelpContent().Examples.Count -gt 0) } | ForEach-Object {
         $Function = $_
         $EmptyContentFound = $false
         $Function.GetHelpContent().Examples | ForEach-Object {
-          if ($_ -eq '') { $EmptyContentFound = $true }
+          # making EmptyContentFound script scope to avoid stupid PSScriptAnalyzer error
+          if ($_ -eq '') { $script:EmptyContentFound = $true }
         }
         if ($EmptyContentFound -eq $true) { $_.Name }
 
