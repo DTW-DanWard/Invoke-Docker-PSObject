@@ -29,7 +29,7 @@ $TestFile = "TestResults_PS$PSVersion`_$TimeStamp.xml"
 $Line = '-' * 70
 
 $Verbose = @{}
-if ($env:BHCommitMessage -match "!verbose") {
+if ($env:BHBranchName -ne "master" -or $env:BHCommitMessage -match "!verbose") {
   $Verbose = @{Verbose = $True}
 }
 
