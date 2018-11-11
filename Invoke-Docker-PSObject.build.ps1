@@ -127,11 +127,11 @@ Task Build Test, Analyze, {
   $Line
   "`nRunning Build"
 
-  #  # only run build if on build server on master
-  #  if (! ($env:BHBuildSystem -ne 'Unknown' -and $env:BHBranchName -eq 'master')) {
-  #    Write-Build Red 'Build only runs on build server on master branch'
-  #    return
-  #  }
+  # only run build if on build server on master
+  if (! ($env:BHBuildSystem -ne 'Unknown' -and $env:BHBranchName -eq 'master')) {
+    Write-Build Red 'Build task only runs on build server on master branch'
+    return
+  }
 
   # Load the module, read the exported functions, update the psd1 FunctionsToExport
   Set-ModuleFunctions @Verbose
@@ -173,7 +173,7 @@ Task Deploy Build, {
 
   # only run build if on build server on master
   if (! ($env:BHBuildSystem -ne 'Unknown' -and $env:BHBranchName -eq 'master')) {
-    Write-Build Red 'Build only runs on build server on master branch'
+    Write-Build Red 'Deploy task only runs on build server on master branch'
     return
   }
   
