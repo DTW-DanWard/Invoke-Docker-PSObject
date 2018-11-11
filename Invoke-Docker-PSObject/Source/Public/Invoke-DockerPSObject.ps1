@@ -49,20 +49,25 @@ function Invoke-DockerPSObject {
   # note: only do this for these docker sub-commands: images, ps and history
   # otherwise data is not tabular/worth/possible to convert to PSObjects
   # also, don't do this if user has passed in their own --format parameter
-  $ValidSubCmds = 'images', 'ps', 'history'
+  $ProcessedSubCmds = 'images', 'ps', 'history'
+  Write-Verbose "Sub-commands processed by this utility: $ProcessedSubCmds"
   $Cmd = 'docker'
   $SubCmd = $args[0]
+  Write-Verbose "Sub-command passed this time: $SubCmd"
+  Write-Verbose "Full list of user parameters passed: $args"
   # we don't process every Docker request; for ones we don't we invoke docker args without modificatino and return as-is
   # these are the Docker requests we skip:
   #  - not a valid sub command
   #  - contains special formatting (even if valid sub command)
   #  - is a help request
-  if ($ValidSubCmds -notcontains $SubCmd -or $args -contains '--format' -or $args -contains '--help') {
+  if ($ProcessedSubCmds -notcontains $SubCmd -or $args -contains '--format' -or $args -contains '--help') {
+    Write-Verbose "Sub-command '$SubCmd' output does not get converted to PSObjects"
     & $Cmd $args
     return
   }
 
   $args += '--format', '{{ json . }}'
+  Write-Verbose "Parameters to pass to docker.exe when invoking: $args"
   $Results = & $Cmd $args
   # convert Results from json to PSObjects
   $Results = $Results | ConvertFrom-Json

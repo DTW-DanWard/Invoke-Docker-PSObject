@@ -27,6 +27,9 @@ function Convert-DockerSizeToPSSize {
   )
   #endregion
   process {
+    Write-Verbose "DockerSize passed to function: $DockerSize"
+    $DockerSizeNumberRegex = '^(?<Number>[0-9\.]+)(?<Unit>[a-z]+$)'
+    Write-Verbose "RegEx used to parse this value: : $DockerSizeNumberRegex"
     $UnitB = 'B'
     $UnitKB = 'KB'
     $UnitMB = 'MB'
@@ -41,15 +44,18 @@ function Convert-DockerSizeToPSSize {
     # found in validation/parsing below.
     #endregion
     $Matches = $null
-    $Valid = $DockerSize -match '^(?<Number>[0-9\.]+)(?<Unit>[a-z]+$)'
+    $Valid = $DockerSize -match $DockerSizeNumberRegex
     if ($Valid -eq $false) {
+      Write-Verbose "Not a valid size: $DockerSize"
       throw "DockerSize '$DockerSize' (no quotes) should be a number (no comma, decimal optional) followed by a unit ($ValidUnits)"
       return
     }
 
     # get/validate unit portion first; need to know in order to convert number between KB/MB/GB
     $Unit = $Matches.Unit.ToString().ToUpper()
+    Write-Verbose "Unit parsed via RegEx: $Unit"
     if ($Unit -notin $ValidUnits) {
+      Write-Verbose "Not a valid Unit (see regex): $Unit"
       throw "DockerSize $DockerSize has invalid unit $Unit - expected value in: $ValidUnits"
       return
     }
@@ -57,7 +63,9 @@ function Convert-DockerSizeToPSSize {
     # get/validate number portion
     [double]$Number = $null
     $Valid = [double]::TryParse($Matches.Number, [ref]$Number)
+    Write-Verbose "Number parsed via RegEx: $Number"
     if ($Valid -eq $false) {
+      Write-Verbose "Not a valid Number (see regex): $($Matches.Number)"
       throw "DockerSize $DockerSize is invalid number; should be only numbers and one optional decimal"
       return
     }
