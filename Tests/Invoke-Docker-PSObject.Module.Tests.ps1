@@ -101,10 +101,14 @@ $SourceScripts | ForEach-Object {
 
 
 #region Confirm which functions/aliases are exported
-Describe 'Confirm which functions/aliases are exported' {
-  Import-Module $env:BHPSModuleManifest -Force
+Describe 'Confirm module public information is correct' {
+  $Module = Import-Module $env:BHPSModuleManifest -Force -PassThru
   [string[]]$OfficialListFunctions = @('Invoke-DockerPSObject')
   [string[]]$OfficialListAliases = @('id')
+
+  It 'confirms the module name matches the project name' {
+    $Module.Name | Should Be $env:BHProjectName
+  }
 
   It 'confirms exported function count is correct' {
     ([object[]](Get-Command -Module $env:BHProjectName -Type Function)).Count | Should Be ($OfficialListFunctions.Count)
@@ -119,6 +123,5 @@ Describe 'Confirm which functions/aliases are exported' {
   It 'confirms all exported aliases are in the official list' {
     ([object[]](Get-Command -Module $env:BHProjectName -Type Alias)).Name | Where-Object { $_ -notin $OfficialListAliases} | Should BeNullOrEmpty
   }
-
 }
 #endregion
