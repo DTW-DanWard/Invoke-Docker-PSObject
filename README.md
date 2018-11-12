@@ -60,3 +60,4 @@ I've been using this simple utility on my home machine for awhile.  When finally
 * PowerShell module release pipeline using [Warren F's awesome utilities](http://ramblingcookiemonster.github.io/PSDeploy-Inception/) to automatically build on AppVeyor and deploy to PowerShellGallery;
 * copious Pester unit testing;
 * lots of small stuff like dynamically loading/exporting Private/Public functions and custom object output formatting via ps1xml.  (You won't believe how many times I've been too ~~lazy~~ busy to actually add this to my projects.)
+
