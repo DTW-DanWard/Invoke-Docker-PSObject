@@ -22,6 +22,12 @@ Describe 'Docker integration tests' {
     Write-Host "Has $((id images).Count) images"
     (id images).Count | Should Be 8
   }
+
+  It "should list images" {
+    id images | Select-Object Repository, Tag, Size | Write-Host
+    (id images).Count | Should Be 8
+  }
+
 }
 }
 #endregion
