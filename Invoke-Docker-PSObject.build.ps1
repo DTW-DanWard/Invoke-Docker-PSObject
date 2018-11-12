@@ -61,7 +61,7 @@ task Test Init, {
   }
   # DevMachine tests are only run on the native developer machine; not on build server, not in test container
   # these tests typically are integration tests - blackbox testing against docker.exe results
-  if (($env:BHBuildSystem -ne 'Unknown') -or ($null -eq (Get-Command -Name docker.exe))) {
+  if (($env:BHBuildSystem -ne 'Unknown') -or ($null -eq (Get-Command -Name 'docker.exe' -ErrorAction SilentlyContinue))) {
     $Params.ExcludeTag = @('DevMachine')
   }
 
@@ -89,13 +89,13 @@ task Test_Ubuntu Init, {
   $Line
   "`nTesting PowerShell in Ubuntu container"
 
-  # asdf needs error handling
+  # needs error handling
   # this should only be run on local developer machine, not on build server, and should not be a
   # required part of the deployment to PowerShell Gallery
   if ($env:BHBuildSystem -ne 'Unknown') { Write-Error 'Task Test_Ubuntu should only be run on local dev machine' }
 
   # simple hard-coded version for now; use Ubuntu 16.04 image on local machine
-  $ContainerName = 'TestContainer'
+  $ContainerName = $env:BHProjectName + '_test_' + (Get-Random -Minimum 1000 -Maximum 999999)
   "`nStop and remove container with name: $ContainerName"
   docker stop $ContainerName
   docker rm $ContainerName

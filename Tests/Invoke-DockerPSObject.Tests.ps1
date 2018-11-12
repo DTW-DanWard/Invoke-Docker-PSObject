@@ -33,8 +33,8 @@ Describe -Tag 'DevMachine' 'Docker integration tests' {
     $TestContainerNamePrefix = $TestImageName + '_' + (Get-Random -Minimum 1000 -Maximum 999999) + '_'
     # create random number of hello-world containers
     $TestContainerManualCount = 0
-    $Minimum = 4
-    $Maximum = 8
+    $Minimum = 3
+    $Maximum = 6
     1..(Get-Random -Minimum $Minimum -Maximum $Maximum) | ForEach-Object {
       docker run --name ($TestContainerNamePrefix + $_) $TestImageName
       $TestContainerManualCount += 1
