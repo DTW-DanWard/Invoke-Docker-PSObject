@@ -22,17 +22,24 @@ Describe -Tag 'DevMachine' 'Docker integration tests' {
 
     # ensure at least one image is available on instance
     # note: don't change test image name without changing other tests below - they make assumptions
-    # based on the fact that test image is hello-world (size, image history size, etc.)
+    # based on the fact that test image is hello-world (image size, image history size, etc.)
     $TestImageName = 'hello-world'
     docker pull $TestImageName > $null
     # get test image id using docker CLI (will later test this with our tool)
     # this may only work with hello world - simple single repo name
     $TestImageIdFromDockerCLI = docker images $TestImageName --format "{{.ID}}"
 
-    # asdf create test images
-
-    # asdf afterall - delete test images
-
+    # create unique prefix for container names so can use to find/delete containers
+    $TestContainerNamePrefix = $TestImageName + '_' + (Get-Random -Minimum 1000 -Maximum 999999) + '_'
+    # create random number of hello-world containers
+    $TestContainerManualCount = 0
+    $Minimum = 4
+    $Maximum = 8
+    1..(Get-Random -Minimum $Minimum -Maximum $Maximum) | ForEach-Object {
+      $Index = $_
+      docker run --name ($TestContainerNamePrefix + $_) $TestImageName
+      $TestContainerManualCount += 1
+    }
 
     # in testing output with no results, DO NOT want to forcibly delete images/containers from
     # local dev machine so instead test with filter with junk value to guarantee no results
@@ -71,7 +78,7 @@ Describe -Tag 'DevMachine' 'Docker integration tests' {
     # test calling history with test image id; PSObjects are returned
     It "Invoke-DockerPSObject history with valid id returns Object array" {
       # need to add , to ensure it doesn't get unwound in pipeline
-      ,(Invoke-DockerPSObject history $TestImageIdFromDockerCLI) | Should BeOfType [Object[]]
+      , (Invoke-DockerPSObject history $TestImageIdFromDockerCLI) | Should BeOfType [Object[]]
     }
     # hello-world history has two entries
     It "Invoke-DockerPSObject history for test image has correct number of entries" {
@@ -79,13 +86,24 @@ Describe -Tag 'DevMachine' 'Docker integration tests' {
     }
 
 
+    # confirm test image found based on very small size
+    # assuming hello-world image is less than 2KB - there are few (if any) images this small
+    It "Invoke-DockerPSObject images returns container data that can be filtered by size to find test image" {
+      ([object[]](Invoke-DockerPSObject images | Where-Object { $_.SizeKB -lt 2KB })).Count | Should BeGreaterThan 0
+    }
 
-    # asdf check size - need to create test images
+    # confirm test containers found based on name prefix
+    It "Invoke-DockerPSObject ps -a returns container data that can be filtered to find test data" {
+      (Invoke-DockerPSObject ps -a | Where-Object { $_.Names -match $TestContainerNamePrefix }).Count | Should Be $TestContainerManualCount
+    }
 
-    # asdf test alias id - just count images
+    # confirm alias id works
+    It "alias id ps -a returns container data that can be filtered to find test data" {
+      (id ps -a | Where-Object { $_.Names -match $TestContainerNamePrefix }).Count | Should Be $TestContainerManualCount
+    }
 
-    # asdf DONE for now with integration testing
-
+    # cleanup: delete test images create earlier - find using prefix
+    (id ps -a | Where-Object { $_.Names -match $TestContainerNamePrefix }).Names | ForEach-Object { id rm $_ }
   }
 }
 #endregion
