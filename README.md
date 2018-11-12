@@ -1,4 +1,3 @@
-Note: this is still in development - but close to completion - in case you stumble upon it.
 
 master: [![Build status](https://ci.appveyor.com/api/projects/status/1m6rgmj4h3p8m20q/branch/master?svg=true)](https://ci.appveyor.com/project/DTW-DanWard/invoke-docker-psobject/branch/master)   develop: [![Build status](https://ci.appveyor.com/api/projects/status/1m6rgmj4h3p8m20q/branch/develop?svg=true)](https://ci.appveyor.com/project/DTW-DanWard/invoke-docker-psobject/branch/develop)
 
@@ -46,17 +45,18 @@ PS > (id ps -a)[0].CreatedAt.AddDays(-5)
 Saturday, October 6, 2018 11:01:41 AM
 ```
 
-
-(asdf - more examples here including size, use screenshots, sort / filter, use in removing items, etc)
-
-
 ## How it Works
+docker.exe has a format parameter that allows the user to specify a specific output of the results. One barely documented option of this format parameter is that you can specify the output as json.  So this utility works by:
+* Adding --format {{ json . }} to the other arguments passed by the user;
+* Runs docker command with these arguments, get json results, convert to PSObjects;
+* Converts Docker text date to DateTime property for proper comparisons/sorting;
+* Converts Docker text file size (with B, KB, MB text extensions) to value in KB for proper comparisons/sorting.
 
-(asdf - description of --format {{ json . }}, date and size conversions, as a result, if --format passed, runs as-is)
+Note: it only does this work for docker commands: images, ps and history.
 
 
 ## Developer's Note
 I've been using this simple utility on my home machine for awhile.  When finally putting it online, though, I wanted to use this as an opportunity to create a module from complete scratch with all the latest and greatest PowerShell development techniques.  If you are new to module development or writing PowerShell with CI/CD and want something to review and learn, this project is a fairly small, self-contained utility that features:
-* PowerShell module release pipeline using [Warren F's awesome utilities](http://ramblingcookiemonster.github.io/PSDeploy-Inception/) to automatically build on AppVeyor and deploy to PS Gallery;
+* PowerShell module release pipeline using [Warren F's awesome utilities](http://ramblingcookiemonster.github.io/PSDeploy-Inception/) to automatically build on AppVeyor and deploy to PowerShellGallery;
 * copious Pester unit testing;
 * lots of small stuff like dynamically loading/exporting Private/Public functions and custom object output formatting via ps1xml.  (You won't believe how many times I've been too ~~lazy~~ busy to actually add this to my projects.)

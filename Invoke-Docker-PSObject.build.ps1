@@ -44,7 +44,7 @@ task Init {
   $Line
   Set-Location $ProjectRoot
   'Build System Details:'
-  Get-Item env:BH*
+  Get-Item env:BH* | Sort-Object Name
   "`n"
 }
 
@@ -54,10 +54,10 @@ task Test Init, {
   "`nTesting with PowerShell $PSVersion"
 
   $Params = @{
-    Path = "$ProjectRoot\Tests"
-    PassThru = $true
+    Path         = "$ProjectRoot\Tests"
+    PassThru     = $true
     OutputFormat = "NUnitXml"
-    OutputFile = "$ProjectRoot\$TestFile"
+    OutputFile   = "$ProjectRoot\$TestFile"
   }
   # DevMachine tagged tests are only run on the native developer machine; not on build server, not in test container
   # these tests typically are integration tests - blackbox testing against actual docker.exe
@@ -188,12 +188,10 @@ Task Deploy Build, {
     return
   }
 
-  Write-Build Red 'Not implemented yet!'
-
-  # $Params = @{
-  #     Path = $ProjectRoot
-  #     Force = $true
-  #     Recurse = $false # We keep psdeploy artifacts, avoid deploying those : )
-  # }
-  # Invoke-PSDeploy @Verbose @Params
+  $Params = @{
+    Path    = $ProjectRoot
+    Force   = $true
+    Recurse = $false # We keep psdeploy artifacts, avoid deploying those : )
+  }
+  Invoke-PSDeploy @Verbose @Params
 }

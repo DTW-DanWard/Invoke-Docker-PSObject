@@ -4,7 +4,7 @@ image: Visual Studio 2017
 
 #Publish to PowerShell Gallery with this key
 environment:
-  NuGetApiKey:
+  NugetApiKey:
     secure: LdLID7s09cfdn/RnP63uPqcfVAC6jANTKnbCiUUw737IQ8wV95zx2SzDLkaVWVNR
 
 # Allow WMF5 (i.e. PowerShellGallery functionality)
