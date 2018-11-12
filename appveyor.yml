@@ -17,9 +17,6 @@ skip_commits:
 
 build: false
 
-before_test:
-  - ps: docker images
-
-#Kick off the CI/CD pipeline
+# Kick off the CI/CD pipeline
 test_script:
   - ps: . .\build.ps1 -Task 'Deploy'
