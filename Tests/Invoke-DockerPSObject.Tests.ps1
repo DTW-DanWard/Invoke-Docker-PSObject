@@ -36,7 +36,6 @@ Describe -Tag 'DevMachine' 'Docker integration tests' {
     $Minimum = 4
     $Maximum = 8
     1..(Get-Random -Minimum $Minimum -Maximum $Maximum) | ForEach-Object {
-      $Index = $_
       docker run --name ($TestContainerNamePrefix + $_) $TestImageName
       $TestContainerManualCount += 1
     }
@@ -97,13 +96,8 @@ Describe -Tag 'DevMachine' 'Docker integration tests' {
       (Invoke-DockerPSObject ps -a | Where-Object { $_.Names -match $TestContainerNamePrefix }).Count | Should Be $TestContainerManualCount
     }
 
-    # confirm alias id works
-    It "alias id ps -a returns container data that can be filtered to find test data" {
-      (id ps -a | Where-Object { $_.Names -match $TestContainerNamePrefix }).Count | Should Be $TestContainerManualCount
-    }
-
     # cleanup: delete test images create earlier - find using prefix
-    (id ps -a | Where-Object { $_.Names -match $TestContainerNamePrefix }).Names | ForEach-Object { id rm $_ }
+    (Invoke-DockerPSObject ps -a | Where-Object { $_.Names -match $TestContainerNamePrefix }).Names | ForEach-Object { Invoke-DockerPSObject rm $_ }
   }
 }
 #endregion
