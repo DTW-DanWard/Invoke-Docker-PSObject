@@ -19,7 +19,7 @@
   Copyright         = '(c) Dan Ward. All rights reserved.'
 
   # Description of the functionality provided by this module
-  Description       = 'Run docker commands in PowerShell and get PSObjects not strings'
+  Description       = 'Run Docker commands in PowerShell and get proper PSObjects not strings'
 
   # Minimum version of the PowerShell engine required by this module
   PowerShellVersion = '3.0'

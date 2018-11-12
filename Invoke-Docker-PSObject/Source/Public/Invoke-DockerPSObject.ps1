@@ -43,37 +43,39 @@ ID             Image         Command   CreatedAt                Status          
 a8b0bd9c9387   hello-world   "/hello"  10/11/2018 11:01:41 AM   Exited (0) 5 seconds ago            zen_khorana
 #>
 function Invoke-DockerPSObject {
-
-
-  #region Run docker command and capture results in $PSObjects
-  # note: only do this for these docker sub-commands: images, ps and history
-  # otherwise data is not tabular/worth/possible to convert to PSObjects
+  #region Identify subcommand type to process
+  # note: only do this for these docker subcommands: images, ps and history
+  # otherwise data is not tabular/possible to convert to PSObjects
   # also, don't do this if user has passed in their own --format parameter
   $ProcessedSubCmds = 'images', 'ps', 'history'
-  Write-Verbose "Sub-commands processed by this utility: $ProcessedSubCmds"
+  Write-Verbose "Subcommands processed by this utility: $ProcessedSubCmds"
   $Cmd = 'docker'
   $SubCmd = $args[0]
-  Write-Verbose "Sub-command passed this time: $SubCmd"
+  Write-Verbose "Subcommand passed this time: $SubCmd"
   Write-Verbose "Full list of user parameters passed: $args"
-  # we don't process every Docker request; for ones we don't we invoke docker args without modificatino and return as-is
+  #endregion
+
+  #region If not a subcommand to convert to PSObjects, just run and return results
+  # we don't process every Docker request; for ones we don't we just run docker with user args without
+  # modificatino and return as-is
   # these are the Docker requests we skip:
-  #  - not a valid sub command
+  #  - not a valid sub command (not in: images, ps, history)
   #  - contains special formatting (even if valid sub command)
   #  - is a help request
   if ($ProcessedSubCmds -notcontains $SubCmd -or $args -contains '--format' -or $args -contains '--help') {
-    Write-Verbose "Sub-command '$SubCmd' output does not get converted to PSObjects"
+    Write-Verbose "Subcommand '$SubCmd' output does not get converted to PSObjects"
     & $Cmd $args
     return
   }
+  #endregion
 
+  #region Run Docker, get PSObjects, convert date info to proper datetime field, add SizeKB and add custom type (for Format.ps1xml)
   $args += '--format', '{{ json . }}'
   Write-Verbose "Parameters to pass to docker.exe when invoking: $args"
   $Results = & $Cmd $args
   # convert Results from json to PSObjects
   $Results = $Results | ConvertFrom-Json
-  #endregion
 
-  #region Add type name (for Format.ps1xml), set datetime field to PowerShell date, add SizeKB and return object
   $Results | ForEach-Object {
     # add unique type name based on Docker command type to PSObject for matching in Invoke-Docker-PSObject.Format.ps1xml file
     $_.PSObject.TypeNames.Insert(0, 'Invoke-DockerPSObject.' + $SubCmd)

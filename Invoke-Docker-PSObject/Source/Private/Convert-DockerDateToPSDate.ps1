@@ -15,7 +15,6 @@ Sunday, August 12, 2018 6:13:50 PM  (DateTime object)
 .EXAMPLE
 Convert-DockerDateToPSDate (Get-Date '01/01/2018 06:00:00')   # already DateTime; returns as-as
 Monday, January 1, 2018 6:00:00 AM  (DateTime object)
-
 #>
 function Convert-DockerDateToPSDate {
   #region Function parameters
