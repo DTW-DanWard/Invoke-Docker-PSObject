@@ -59,8 +59,8 @@ task Test Init, {
     OutputFormat = "NUnitXml"
     OutputFile = "$ProjectRoot\$TestFile"
   }
-  # DevMachine tests are only run on the native developer machine; not on build server, not in test container
-  # these tests typically are integration tests - blackbox testing against docker.exe results
+  # DevMachine tagged tests are only run on the native developer machine; not on build server, not in test container
+  # these tests typically are integration tests - blackbox testing against actual docker.exe
   if (($env:BHBuildSystem -ne 'Unknown') -or ($null -eq (Get-Command -Name 'docker.exe' -ErrorAction SilentlyContinue))) {
     $Params.ExcludeTag = @('DevMachine')
   }
@@ -139,7 +139,7 @@ Task Build Test, Analyze, {
   $Line
   "`nRunning Build"
 
-  # only run build if on build server on master
+  # only run build if on AppVeyor build server and on branch master
   if (! ($env:BHBuildSystem -ne 'Unknown' -and $env:BHBranchName -eq 'master')) {
     Write-Build Red 'Build task only runs on build server on master branch'
     return
@@ -173,7 +173,6 @@ Task Build Test, Analyze, {
     "New version: $NewVersion"
     "Updating module metadata ModuleVersion and FunctionsToExport"
     Update-Metadata -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -Value ($NewVersion.ToString()) -ErrorAction Stop
-
   } catch {
     "Failed to update version for '$env:BHProjectName': $_.`nContinuing with existing version"
   }
@@ -183,12 +182,12 @@ Task Build Test, Analyze, {
 Task Deploy Build, {
   $Line
 
-  # only run build if on build server on master
+  # only run build if on AppVeyor build server and on branch master
   if (! ($env:BHBuildSystem -ne 'Unknown' -and $env:BHBranchName -eq 'master')) {
     Write-Build Red 'Deploy task only runs on build server on master branch'
     return
   }
-  
+
   Write-Build Red 'Not implemented yet!'
 
   # $Params = @{
