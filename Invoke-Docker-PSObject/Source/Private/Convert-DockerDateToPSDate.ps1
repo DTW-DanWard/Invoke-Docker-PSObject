@@ -35,15 +35,20 @@ function Convert-DockerDateToPSDate {
     } else {
       # ensure it is a string
       $DockerDate = $DockerDate.ToString()
-      Write-Verbose "DockerDate string: $DockerDate"
-      # Example of Docker date: 2018-08-12 18:13:50 -0400 EDT
-      # first remove timezone suffix if exists
-      if (($DockerDate.IndexOf(' -')) -gt 0) {
-        $DockerDate = $DockerDate.Substring(0, $DockerDate.IndexOf(' -'))
-        Write-Verbose "DockerDate string, suffix removed: $DockerDate"
+      Write-Verbose "DockerDate string passed to function: $DockerDate"
+      $DockerDateRegex = '^(?<Date>\d\d\d\d-\d\d-\d\d)[^\d](?<Time>\d\d:\d\d:\d\d).*'
+      Write-Verbose "RegEx used to parse this value: : $DockerDateRegex"
+
+      $Matches = $null
+      $Valid = $DockerDate -match $DockerDateRegex
+      if ($Valid -eq $false) {
+        Write-Verbose "Not a valid date string: $DockerDate"
+        throw "DockerDate '$DockerDate' (no quotes) could not be parsed by regex: $DockerDateRegex"
+        return
       }
-      # convert to proper PowerShell date and return
-      [System.DateTime]::ParseExact($DockerDate, "yyyy-MM-dd HH:mm:ss", [CultureInfo]::InvariantCulture)
+      Write-Verbose "Calling Get-Date with combined date ($($Matches.Date)) and time ($($Matches.Time))"
+      # create date time with values and return
+      Get-Date ($Matches.Date + ' ' + $Matches.Time)
     }
   }
 }
