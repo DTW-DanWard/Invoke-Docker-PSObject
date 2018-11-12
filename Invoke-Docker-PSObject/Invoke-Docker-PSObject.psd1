@@ -86,7 +86,7 @@
     PSData = @{
 
       # Tags applied to this module. These help with module discovery in online galleries.
-      Tags       = @('docker', 'object', 'properties', 'members', 'PSObject', 'PSCustomObject', 'convert', 'string', 'stdout', 'table', 'sort', 'filter', 'docker ps', 'docker images', 'docker history')
+      Tags       = @('docker', 'object', 'properties', 'members', 'PSObject', 'PSCustomObject', 'convert', 'string', 'stdout', 'table', 'sort', 'filter', 'ps', 'images', 'history')
 
       # A URL to the license for this module.
       LicenseUri = 'https://github.com/DTW-DanWard/Invoke-Docker-PSObject/blob/master/LICENSE'
