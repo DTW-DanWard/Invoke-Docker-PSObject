@@ -68,17 +68,6 @@ task Test Init, {
   # Gather test results. Store them in a variable and file
   $TestResults = Invoke-Pester @Params
 
-
-  # # DevMachine tests are only run on the native developer machine; not on build server, not in test container
-  # # these tests typically are integration tests - blackbox testing against docker.exe results
-  # $Options = @{}
-  # if (($env:BHBuildSystem -and 'Unknown') -and ($null -ne (Get-Command -Name docker.exe))) {
-  #   $Options.Tag = 'DevMachine'
-  # }
-
-  # # Gather test results. Store them in a variable and file
-  # $TestResults = Invoke-Pester -Path $ProjectRoot\Tests -PassThru -OutputFormat NUnitXml -OutputFile "$ProjectRoot\$TestFile"
-
   # In Appveyor?  Upload our tests! #Abstract this into a function?
   If ($env:BHBuildSystem -eq 'AppVeyor') {
     (New-Object 'System.Net.WebClient').UploadFile(
