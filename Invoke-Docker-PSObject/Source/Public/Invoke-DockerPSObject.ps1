@@ -41,6 +41,8 @@ PS > id ps -a
 ID             Image         Command   CreatedAt                Status                      Ports   Names
 --             -----         -------   ---------                ------                      -----   -----
 a8b0bd9c9387   hello-world   "/hello"  10/11/2018 11:01:41 AM   Exited (0) 5 seconds ago            zen_khorana
+.LINK
+https://github.com/DTW-DanWard/Invoke-Docker-PSObject
 #>
 function Invoke-DockerPSObject {
   # Note: no arguments defined; we use $args
@@ -63,7 +65,7 @@ function Invoke-DockerPSObject {
   #  - not a valid sub command (not in: images, ps, history)
   #  - contains special formatting (even if valid sub command)
   #  - is a help request
-  if ($ProcessedSubCmds -notcontains $SubCmd -or $args -contains '--format' -or $args -contains '--help') {
+  if ($ProcessedSubCmds -notcontains $SubCmd -or $args -contains '--format' -or $args -contains '--help' -or $args -contains '-h') {
     Write-Verbose "Subcommand '$SubCmd' output does not get converted to PSObjects"
     Invoke-DockerExe @args
     return
