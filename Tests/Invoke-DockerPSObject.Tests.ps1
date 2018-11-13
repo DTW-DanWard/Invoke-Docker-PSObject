@@ -50,9 +50,6 @@ InModuleScope $env:BHProjectName {
       It 'Invoke-DockerPSObject images returns objects' {
         (Invoke-DockerPSObject ps -a).Count | Should Be 2
       }
-      It 'Invoke-DockerPSObject images returns objects than can be filtered by SizeKB' {
-        (Invoke-DockerPSObject ps -a | Where-Object { $_.SizeKB -lt 10KB }).Count | Should Be 1
-      }
     }
 
   }
@@ -75,7 +72,7 @@ Describe -Tag 'DevMachine' 'Docker integration tests' {
     docker pull $TestImageName > $null
     # get test image id using docker CLI (will later test this with our tool)
     # this may only work with hello world - simple single repo name
-    $TestImageIdFromDockerCLI = docker images $TestImageName --format "{{.ID}}"
+    $TestImageIdFromDockerCLI = docker images $TestImageName --format '{{.ID}}'
 
     # create unique prefix for container names so can use to find/delete containers
     $TestContainerNamePrefix = $TestImageName + '_' + (Get-Random -Minimum 1000 -Maximum 999999) + '_'
@@ -90,57 +87,57 @@ Describe -Tag 'DevMachine' 'Docker integration tests' {
 
     # in testing output with no results, DO NOT want to forcibly delete images/containers from
     # local dev machine so instead test with filter with junk value to guarantee no results
-    It "docker images with junk filter should return single object of type string (Header line only)" {
-      (docker images --filter "label=zzzzzzzzzzzzzz") | Should BeOfType [string]
+    It 'docker images with junk filter should return single object of type string (Header line only)' {
+      (docker images --filter 'label=zzzzzzzzzzzzzz') | Should BeOfType [string]
     }
-    It "Invoke-DockerPSObject images with junk filter should return $null (no objects)" {
-      (Invoke-DockerPSObject images --filter "label=zzzzzzzzzzzzzz") | Should BeNullOrEmpty
+    It 'Invoke-DockerPSObject images with junk filter should return $null (no objects)' {
+      (Invoke-DockerPSObject images --filter 'label=zzzzzzzzzzzzzz') | Should BeNullOrEmpty
     }
-    It "docker images with actual results (no filter) should return array with entries of type string" {
+    It 'docker images with actual results (no filter) should return array with entries of type string' {
       (docker images)[1] | Should BeOfType [string]
     }
-    It "Invoke-DockerPSObject images with actual results (no filter) should return array with entries of type PSCustomObject" {
+    It 'Invoke-DockerPSObject images with actual results (no filter) should return array with entries of type PSCustomObject' {
       (Invoke-DockerPSObject images)[1] | Should BeOfType [PSCustomObject]
     }
 
 
-    It "docker ps -a with junk filter should return single object of type string (Header line only)" {
-      (docker ps -a --filter "name=zzzzzzzzzzzzzz") | Should BeOfType [string]
+    It 'docker ps -a with junk filter should return single object of type string (Header line only)' {
+      (docker ps -a --filter 'name=zzzzzzzzzzzzzz') | Should BeOfType [string]
     }
-    It "Invoke-DockerPSObject ps -a with junk filter should return $null (no objects)" {
-      (Invoke-DockerPSObject ps -a --filter "name=zzzzzzzzzzzzzz") | Should BeNullOrEmpty
+    It 'Invoke-DockerPSObject ps -a with junk filter should return $null (no objects)' {
+      (Invoke-DockerPSObject ps -a --filter 'name=zzzzzzzzzzzzzz') | Should BeNullOrEmpty
     }
-    It "docker ps -a with actual results (no filter) should return object array of type string" {
+    It 'docker ps -a with actual results (no filter) should return object array of type string' {
       (docker ps -a)[1] | Should BeOfType [string]
     }
-    It "Invoke-DockerPSObject ps -a with actual results (no filter) should return array of type PSCustomObject" {
+    It 'Invoke-DockerPSObject ps -a with actual results (no filter) should return array of type PSCustomObject' {
       (Invoke-DockerPSObject ps -a)[1] | Should BeOfType [PSCustomObject]
     }
 
 
     # get test image id using Invoke-DockerPSObject and standard PowerShell filtering
-    It "Invoke-DockerPSObject images returns images that can be filtered to find single test image" {
+    It 'Invoke-DockerPSObject images returns images that can be filtered to find single test image' {
       (Invoke-DockerPSObject images | Where-Object { $_.Repository -eq 'hello-world' }).ID | Should Be $TestImageIdFromDockerCLI
     }
     # test calling history with test image id; PSObjects are returned
-    It "Invoke-DockerPSObject history with valid id returns Object array" {
+    It 'Invoke-DockerPSObject history with valid id returns Object array' {
       # need to add , to ensure it doesn't get unwound in pipeline
       , (Invoke-DockerPSObject history $TestImageIdFromDockerCLI) | Should BeOfType [Object[]]
     }
     # hello-world history has two entries
-    It "Invoke-DockerPSObject history for test image has correct number of entries" {
+    It 'Invoke-DockerPSObject history for test image has correct number of entries' {
       (Invoke-DockerPSObject history $TestImageIdFromDockerCLI).Count | Should Be 2
     }
 
 
     # confirm test image found based on very small size
     # assuming hello-world image is less than 2KB - there are few (if any) images this small
-    It "Invoke-DockerPSObject images returns container data that can be filtered by size to find test image" {
+    It 'Invoke-DockerPSObject images returns container data that can be filtered by size to find test image' {
       ([object[]](Invoke-DockerPSObject images | Where-Object { $_.SizeKB -lt 2KB })).Count | Should BeGreaterThan 0
     }
 
     # confirm test containers found based on name prefix
-    It "Invoke-DockerPSObject ps -a returns container data that can be filtered to find test data" {
+    It 'Invoke-DockerPSObject ps -a returns container data that can be filtered to find test data' {
       (Invoke-DockerPSObject ps -a | Where-Object { $_.Names -match $TestContainerNamePrefix }).Count | Should Be $TestContainerManualCount
     }
 
