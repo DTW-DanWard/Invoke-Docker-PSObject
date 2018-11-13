@@ -141,7 +141,7 @@ Task Build Test, Analyze, {
     return
   }
 
-  # Load the module, read the exported functions/aliases and update the psd1 *ToExport
+  # Load the module, read the exported functions/aliases and update the psd1 *ToExport fields
   Set-ModuleFunctions @Verbose
   Set-ModuleAliases @Verbose
 

@@ -44,7 +44,7 @@ a8b0bd9c9387   hello-world   "/hello"  10/11/2018 11:01:41 AM   Exited (0) 5 sec
 #>
 function Invoke-DockerPSObject {
   # Note: no arguments defined; we use $args
-  
+
   #region Identify subcommand type to process
   # note: only do this for these docker subcommands: images, ps and history
   # otherwise data is not tabular/possible to convert to PSObjects

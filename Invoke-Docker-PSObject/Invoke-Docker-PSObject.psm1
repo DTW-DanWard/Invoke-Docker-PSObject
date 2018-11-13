@@ -14,3 +14,7 @@ Get-ChildItem -Path $PublicSourceRootPath -Filter *.ps1 -Recurse | ForEach-Objec
     $FunctionNames += $_.Name
   }
 }
+
+# export public function names and alias id
+New-Alias -Name id -Value Invoke-DockerPSObject
+Export-ModuleMember -Function $FunctionNames -Alias id
