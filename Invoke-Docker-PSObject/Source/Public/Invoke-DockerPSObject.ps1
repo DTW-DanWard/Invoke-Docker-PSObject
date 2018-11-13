@@ -77,17 +77,18 @@ function Invoke-DockerPSObject {
   Write-Verbose "Parameters to pass to docker.exe when invoking: $args"
   $Results = Invoke-DockerExe @args
 
-  # convert Results from json to PSObjects
-  $Results = $Results | ConvertFrom-Json
-
-  $Results | ForEach-Object {
-    # add unique type name based on Docker command type to PSObject for matching in Invoke-Docker-PSObject.Format.ps1xml file
-    $_.PSObject.TypeNames.Insert(0, 'Invoke-DockerPSObject.' + $SubCmd)
-    # convert preexisting CreatedAt field to DateTime (or ensure it already is one)
-    $_.CreatedAt = Convert-DockerDateToPSDate -DockerDate ($_.CreatedAt)
-    # add field SizeKB based on converted value in Size
-    Add-Member -InputObject $_ -MemberType NoteProperty -Name SizeKB -Value (Convert-DockerSizeToPSSize -DockerSize $_.Size)
-    $_
+  # explicit null check to improve mock testing
+  if ($null -ne $Results) {
+    # convert Results from json to PSObjects
+    $Results | ConvertFrom-Json | ForEach-Object {
+      # add unique type name based on Docker command type to PSObject for matching in Invoke-Docker-PSObject.Format.ps1xml file
+      $_.PSObject.TypeNames.Insert(0, 'Invoke-DockerPSObject.' + $SubCmd)
+      # convert preexisting CreatedAt field to DateTime (or ensure it already is one)
+      $_.CreatedAt = Convert-DockerDateToPSDate -DockerDate ($_.CreatedAt)
+      # add field SizeKB based on converted value in Size
+      Add-Member -InputObject $_ -MemberType NoteProperty -Name SizeKB -Value (Convert-DockerSizeToPSSize -DockerSize $_.Size)
+      $_
+    }
   }
   #endregion
 }
