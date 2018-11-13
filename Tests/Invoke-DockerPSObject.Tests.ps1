@@ -23,13 +23,13 @@ InModuleScope $env:BHProjectName {
 
     Context 'Test docker ps -a with results' {
       Mock -CommandName 'Invoke-DockerExe' -MockWith {
-        @( 
+        @(
           '{"Command":"\"/hello\"","CreatedAt":"2018-11-13 14:50:01 -0500 EST","ID":"d8d321e45a2b","Image":"hello-world","Labels":"","LocalVolumes":"0","Mounts":"","Names":"hello-world_765707_4","Networks":"bridge","Ports":"","RunningFor":"3 hours ago","Size":"0B","Status":"Exited (0) 3 hours ago"}',
           '{"Command":"\"/hello\"","CreatedAt":"2018-11-13 14:49:59 -0500 EST","ID":"d9554895f3e3","Image":"hello-world","Labels":"","LocalVolumes":"0","Mounts":"","Names":"hello-world_765707_3","Networks":"bridge","Ports":"","RunningFor":"3 hours ago","Size":"0B","Status":"Exited (0) 3 hours ago"}',
           '{"Command":"\"/hello\"","CreatedAt":"2018-11-13 14:49:57 -0500 EST","ID":"2829c668ee74","Image":"hello-world","Labels":"","LocalVolumes":"0","Mounts":"","Names":"hello-world_765707_2","Networks":"bridge","Ports":"","RunningFor":"3 hours ago","Size":"0B","Status":"Exited (0) 3 hours ago"}',
           '{"Command":"\"/hello\"","CreatedAt":"2018-11-13 14:49:55 -0500 EST","ID":"26a65c256a07","Image":"hello-world","Labels":"","LocalVolumes":"0","Mounts":"","Names":"hello-world_765707_1","Networks":"bridge","Ports":"","RunningFor":"3 hours ago","Size":"0B","Status":"Exited (0) 3 hours ago"}',
-          '{"Command":"\"nginx -g daemon ofΓÇª\"","CreatedAt":"2018-10-13 15:20:01 -0400 EDT","ID":"df6bb9f185f0","Image":"nginx","Labels":"maintainer=NGINX Docker Maintainers \u003cdocker-maint@nginx.com\u003e","LocalVolumes":"0","Mounts":"","Names":"nginx123","Networks":"bridge","Ports":"","RunningFor":"4 weeks ago","Size":"0B","Status":"Exited (0) 4 weeks ago"}',
-          '{"Command":"\"nginx -g daemon ofΓÇª\"","CreatedAt":"2018-10-13 15:02:51 -0400 EDT","ID":"81ff3c07b47b","Image":"nginx","Labels":"maintainer=NGINX Docker Maintainers \u003cdocker-maint@nginx.com\u003e","LocalVolumes":"0","Mounts":"","Names":"nginx-1","Networks":"bridge","Ports":"","RunningFor":"4 weeks ago","Size":"0B","Status":"Created"}'
+          '{"Command":"\"nginx -g daemon","CreatedAt":"2018-10-13 15:20:01 -0400 EDT","ID":"df6bb9f185f0","Image":"nginx","Labels":"maintainer=NGINX Docker Maintainers \u003cdocker-maint@nginx.com\u003e","LocalVolumes":"0","Mounts":"","Names":"nginx123","Networks":"bridge","Ports":"","RunningFor":"4 weeks ago","Size":"0B","Status":"Exited (0) 4 weeks ago"}',
+          '{"Command":"\"nginx -g daemon","CreatedAt":"2018-10-13 15:02:51 -0400 EDT","ID":"81ff3c07b47b","Image":"nginx","Labels":"maintainer=NGINX Docker Maintainers \u003cdocker-maint@nginx.com\u003e","LocalVolumes":"0","Mounts":"","Names":"nginx-1","Networks":"bridge","Ports":"","RunningFor":"4 weeks ago","Size":"0B","Status":"Created"}'
         )
       }
       It 'Invoke-DockerPSObject ps -a returns objects' {
@@ -42,7 +42,7 @@ InModuleScope $env:BHProjectName {
 
     Context 'Test docker images with results' {
       Mock -CommandName 'Invoke-DockerExe' -MockWith {
-        @( 
+        @(
           '{"Containers":"N/A","CreatedAt":"2018-10-02 15:20:03 -0400 EDT","CreatedSince":"6 weeks ago","Digest":"\u003cnone\u003e","ID":"be1f31be9a87","Repository":"nginx","SharedSize":"N/A","Size":"109MB","Tag":"latest","UniqueSize":"N/A","VirtualSize":"109.1MB"}',
           '{"Containers":"N/A","CreatedAt":"2018-09-07 15:25:39 -0400 EDT","CreatedSince":"2 months ago","Digest":"\u003cnone\u003e","ID":"4ab4c602aa5e","Repository":"hello-world","SharedSize":"N/A","Size":"1.84kB","Tag":"latest","UniqueSize":"N/A","VirtualSize":"1.84kB"}'
         )
