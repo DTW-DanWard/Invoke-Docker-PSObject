@@ -43,13 +43,14 @@ ID             Image         Command   CreatedAt                Status          
 a8b0bd9c9387   hello-world   "/hello"  10/11/2018 11:01:41 AM   Exited (0) 5 seconds ago            zen_khorana
 #>
 function Invoke-DockerPSObject {
+  # Note: no arguments defined; we use $args
+  
   #region Identify subcommand type to process
   # note: only do this for these docker subcommands: images, ps and history
   # otherwise data is not tabular/possible to convert to PSObjects
   # also, don't do this if user has passed in their own --format parameter
   $ProcessedSubCmds = 'images', 'ps', 'history'
   Write-Verbose "Subcommands processed by this utility: $ProcessedSubCmds"
-  $Cmd = 'docker'
   $SubCmd = $args[0]
   Write-Verbose "Subcommand passed this time: $SubCmd"
   Write-Verbose "Full list of user parameters passed: $args"
@@ -64,7 +65,7 @@ function Invoke-DockerPSObject {
   #  - is a help request
   if ($ProcessedSubCmds -notcontains $SubCmd -or $args -contains '--format' -or $args -contains '--help') {
     Write-Verbose "Subcommand '$SubCmd' output does not get converted to PSObjects"
-    & $Cmd $args
+    Invoke-DockerExe @args
     return
   }
   #endregion
@@ -72,7 +73,8 @@ function Invoke-DockerPSObject {
   #region Run Docker, get PSObjects, convert date info to proper datetime field, add SizeKB and add custom type (for Format.ps1xml)
   $args += '--format', '{{ json . }}'
   Write-Verbose "Parameters to pass to docker.exe when invoking: $args"
-  $Results = & $Cmd $args
+  $Results = Invoke-DockerExe @args
+
   # convert Results from json to PSObjects
   $Results = $Results | ConvertFrom-Json
 

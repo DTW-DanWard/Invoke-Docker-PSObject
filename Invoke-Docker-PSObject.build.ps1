@@ -1,8 +1,4 @@
-
 [CmdletBinding()]
-# Write-Host is used (shudder!) in the Pester test files
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSAvoidUsingWriteHost', '')]
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSAvoidUsingEmptyCatchBlock', '')]
 param()
 
 # all the build/deploy code you see if adapted from from Warren F's (ramblingcookiemonster) excellent PowerShell build/deploy utilties
@@ -145,8 +141,9 @@ Task Build Test, Analyze, {
     return
   }
 
-  # Load the module, read the exported functions, update the psd1 FunctionsToExport
+  # Load the module, read the exported functions/aliases and update the psd1 *ToExport
   Set-ModuleFunctions @Verbose
+  Set-ModuleAliases @Verbose
 
   # Bump the module version if we didn't manually bump it
   try {

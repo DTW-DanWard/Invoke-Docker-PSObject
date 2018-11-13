@@ -16,8 +16,6 @@ Describe -Tag 'DevMachine' 'Docker integration tests' {
   Get-Module -Name $env:BHProjectName -All | Remove-Module -Force
   Import-Module $env:BHPSModuleManifest -Force -ErrorAction Stop
 
-  # need to pull Hello-World images
-
   InModuleScope $env:BHProjectName {
 
     # ensure at least one image is available on instance
