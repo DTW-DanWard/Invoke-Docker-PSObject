@@ -83,7 +83,7 @@ task Test Init, {
 # Synopsis: Run unit tests in PowerShell Core Ubuntu Docker instance
 task Test_Ubuntu Init, {
   $Line
-  "`nTesting PowerShell in Ubuntu container"
+  "`nTesting project in PowerShell Core Ubuntu container"
 
   # needs error handling
   # this should only be run on local developer machine, not on build server, and should not be a
@@ -106,7 +106,7 @@ task Test_Ubuntu Init, {
   docker start $ContainerName
   "`nRun /build.ps1 Test"
   # Invoke-Build fails if the /build.ps1 command is not run relative to the project - so run from project root
-  docker exec $ContainerName pwsh -Command "& { cd /tmp/Invoke-Docker-PSObject; ./build.ps1 }"
+  docker exec $ContainerName pwsh -Command ('& { cd /tmp/' + $env:BHProjectName + '; ./build.ps1 }')
   docker stop $ContainerName
 }
 
@@ -135,9 +135,9 @@ Task Build Test, Analyze, {
   $Line
   "`nRunning Build"
 
-  # only run build if on AppVeyor build server and on branch master
-  if (! ($env:BHBuildSystem -ne 'Unknown' -and $env:BHBranchName -eq 'master')) {
-    Write-Build Red 'Build task only runs on build server on master branch'
+  # only run build if: on AppVeyor (official build server), on branch master and found '!deploy' in commit message
+  if (! ($env:BHBuildSystem -ne 'Unknown' -and $env:BHBranchName -eq 'master' -and $env:BHCommitMessage -match '!deploy')) {
+    Write-Build Red 'Build task only runs on build server if commit on master branch containing message !deploy'
     return
   }
 
@@ -179,9 +179,9 @@ Task Build Test, Analyze, {
 Task Deploy Build, {
   $Line
 
-  # only run build if on AppVeyor build server and on branch master
-  if (! ($env:BHBuildSystem -ne 'Unknown' -and $env:BHBranchName -eq 'master')) {
-    Write-Build Red 'Deploy task only runs on build server on master branch'
+  # only run build if: on AppVeyor (official build server), on branch master and found '!deploy' in commit message
+  if (! ($env:BHBuildSystem -ne 'Unknown' -and $env:BHBranchName -eq 'master' -and $env:BHCommitMessage -match '!deploy')) {
+    Write-Build Red 'Deploy task only runs on build server if commit on master branch containing message !deploy'
     return
   }
 
