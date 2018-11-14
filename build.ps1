@@ -18,7 +18,7 @@ Get-Item env:BH* | Remove-Item
 # now re/set build environment variables
 Set-BuildEnvironment
 
-Invoke-Build -File .\Invoke-Docker-PSObject.build.ps1 -Task $Task -Result Result
+Invoke-Build -File .\InvokeBuild.ps1 -Task $Task -Result Result
 if ($Result.Error) {
   exit 1
 } else {
