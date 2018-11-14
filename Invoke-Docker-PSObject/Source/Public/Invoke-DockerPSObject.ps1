@@ -15,32 +15,22 @@ the data and do the conversion.  If you run a Docker command and pass in the
 
 'Invoke-DockerPSObject' is a lot to type so an alias is created for it: id
 .EXAMPLE
-# legacy docker output first
-PS > docker ps -a
-CONTAINER ID   IMAGE         COMMAND   CREATED                  STATUS                      PORTS   NAMES
-a8b0bd9c9387   hello-world   "/hello"  34 seconds ago           Exited (0) 32 seconds ago           zen_khorana
+id ps -a
 
-PS > # using Invoke-DockerPSObject
-PS > Invoke-DockerPSObject ps -a
 ID             Image         Command   CreatedAt                Status                      Ports   Names
 --             -----         -------   ---------                ------                      -----   -----
 a8b0bd9c9387   hello-world   "/hello"  10/11/2018 11:01:41 AM   Exited (0) 5 seconds ago            zen_khorana
 
 # notice the CreatedAt field output is a proper DateTime?
 
-# we now use the results as proper objects
-PS > $D = Invoke-DockerPSObject ps -a
-PS > $D[0].CreatedAt
-Thursday, October 11, 2018 11:01:41 AM
-PS > $D[0].CreatedAt.GetType().FullName
-System.DateTime
-
+(id ps -a)[0].CreatedAt.AddDays(-5)
+Saturday, October 6, 2018 11:01:41 AM
 .EXAMPLE
-# using short alias
-PS > id ps -a
-ID             Image         Command   CreatedAt                Status                      Ports   Names
---             -----         -------   ---------                ------                      -----   -----
-a8b0bd9c9387   hello-world   "/hello"  10/11/2018 11:01:41 AM   Exited (0) 5 seconds ago            zen_khorana
+(id ps -a | ? Names -match '^hello-world_').Names | % { id rm $_ }
+# deletes all container names starting with hello-world_
+.EXAMPLE
+(id images | Measure-Object -Sum -Property SizeKB).Sum
+# Get the total size of all the images
 .LINK
 https://github.com/DTW-DanWard/Invoke-Docker-PSObject
 #>
