@@ -1,8 +1,13 @@
 Set-StrictMode -Version Latest
 
+#region Set module/script-level variables
+$ScriptLevelVariables = Join-Path -Path $env:BHModulePath -ChildPath 'Set-ScriptLevelVariables.ps1'
+. $ScriptLevelVariables
+#endregion
+
 #region Dot-source Source file associated with this test file
 # if no value returned just exit; specific error is already written in Get-SourceScriptFilePath call
-. $PSScriptRoot\Get-SourceScriptFilePath.ps1
+. (Join-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -ChildPath Get-SourceScriptFilePath.ps1)
 $SourceScript = Get-SourceScriptFilePath
 if ($null -eq $SourceScript) { exit }
 Describe "Re/loading: $SourceScript" { }
@@ -12,6 +17,9 @@ Describe "Re/loading: $SourceScript" { }
 
 #region Docker unit tests
 # tests that will work on any machine - mocking call to docker.exe so not needed
+Get-Module -Name $env:BHProjectName -All | Remove-Module -Force
+Import-Module $env:BHPSModuleManifest -Force -ErrorAction Stop
+
 InModuleScope $env:BHProjectName {
   Describe 'Docker unit tests' {
     Context 'Test docker ps -a with empty results' {

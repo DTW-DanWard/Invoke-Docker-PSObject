@@ -1,4 +1,11 @@
 
+Set-StrictMode -Version Latest
+
+#region Set module/script-level variables
+$ScriptLevelVariables = Join-Path -Path $env:BHModulePath -ChildPath 'Set-ScriptLevelVariables.ps1'
+. $ScriptLevelVariables
+#endregion
+
 
 # This file does not have tests for any specific file:
 #  - it has tests across all Source files in the module;
@@ -15,7 +22,7 @@ Get-ChildItem -Path $SourceRootPath -Filter *.ps1 -Recurse | ForEach-Object {
 
 
 #region Confirming all Source functions in the module have help defined
-$SourceScripts | ForEach-Object {
+$SourceScripts | Where-Object { ($null -ne (Get-Content $_)) -and ((Get-Content $_).Trim() -ne '') } | ForEach-Object {
   $SourceScript = $_
   Describe "Source script: $SourceScript" { }
   $Functions = ([System.Management.Automation.Language.Parser]::ParseInput((Get-Content -Path $SourceScript -Raw), [ref]$null, [ref]$null)).FindAll( { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $false)
@@ -86,8 +93,8 @@ $SourceScripts | ForEach-Object {
         $Function = $_
         $Function.GetHelpContent().Parameters.Keys | ForEach-Object {
           $Key = $_
-          if ($Function.GetHelpContent().Parameters.$Key -eq $null -or
-            $Function.GetHelpContent().Parameters.$Key.Trim() -eq '') {
+          if ($null -eq ($Function.GetHelpContent().Parameters.$Key) -or
+            ($Function.GetHelpContent().Parameters.$Key) -eq '') {
             $Function.Name + ':' + $Key
           }
         }
@@ -101,12 +108,9 @@ $SourceScripts | ForEach-Object {
     It 'confirms Example field(s) have content' {
       $Functions | Where-Object { ($null -ne $_.GetHelpContent()) -and ($_.GetHelpContent().Examples.Count -gt 0) } | ForEach-Object {
         $Function = $_
-        $EmptyContentFound = $false
-        $Function.GetHelpContent().Examples | ForEach-Object {
-          # making EmptyContentFound script scope to avoid stupid PSScriptAnalyzer error
-          if ($_ -eq '') { $script:EmptyContentFound = $true }
-        }
-        if ($EmptyContentFound -eq $true) { $_.Name }
+        # this probably should check across entire array but fallback notation not working in script, weird
+        # just assume a single example and check that
+        if ($Function.GetHelpContent().Examples.Trim() -eq '') { $_.Name }
       } | Should BeNullOrEmpty
     }
   }
@@ -116,16 +120,17 @@ $SourceScripts | ForEach-Object {
 
 #region Confirm which functions/aliases are exported
 Describe 'Confirm module public information is correct' {
-  $Module = Import-Module $env:BHPSModuleManifest -Force -PassThru
+  Get-Module -Name $env:BHProjectName | Remove-Module -Force
+  # note: we -Force import here to overwrite (it shouldn't be in memory, but just in case) then remove it after
+  # must remove after so it does not accidentally affect unit testing of individual files, mocked functions, etc.
+  $Module = Import-Module -Name $env:BHPSModuleManifest -Force -PassThru
   $PublicSourceRootPath = Join-Path -Path (Join-Path -Path $env:BHModulePath -ChildPath 'Source') -ChildPath 'Public'
   [string[]]$OfficialPublicFunctions = $null
-  Get-ChildItem -Path $PublicSourceRootPath -Filter *.ps1 -Recurse | ForEach-Object {
+  Get-ChildItem -Path $PublicSourceRootPath -Filter *.ps1 -Recurse | Where-Object { ($null -ne (Get-Content $_.FullName)) -and ((Get-Content $_.FullName).Trim() -ne '') } | ForEach-Object {
     ([System.Management.Automation.Language.Parser]::ParseInput((Get-Content -Path $_.FullName -Raw), [ref]$null, [ref]$null)).FindAll( { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $false) | ForEach-Object {
       $OfficialPublicFunctions += $_.Name
     }
   }
-  # this must be hard-coded; no fast/easy programmatic way of doing this other than doing the method used to test it
-  [string[]]$OfficialPublicAliases = @('id')
 
   It 'confirms the module name matches the project name' {
     $Module.Name | Should Be $env:BHProjectName
@@ -145,13 +150,15 @@ Describe 'Confirm module public information is correct' {
   It 'confirms exported alias count is correct' {
     if ($null -ne (Get-Command -Module $env:BHProjectName -Type Alias)) {
       ([object[]](Get-Command -Module $env:BHProjectName -Type Alias)).Count |
-        Should Be ($OfficialPublicAliases.Count)
+        Should Be ($OfficialAliasExports.Keys.Count)
     }
   }
   It 'confirms all exported aliases are in the official list' {
     if ($null -ne (Get-Command -Module $env:BHProjectName -Type Alias)) {
-      ([object[]](Get-Command -Module $env:BHProjectName -Type Alias)).Name | Where-Object { $_ -notin $OfficialPublicAliases} | Should BeNullOrEmpty
+      ([object[]](Get-Command -Module $env:BHProjectName -Type Alias)).Name | Where-Object { $_ -notin ($OfficialAliasExports.Keys)} | Should BeNullOrEmpty
     }
   }
+
+  Get-Module -Name $env:BHProjectName | Remove-Module -Force
 }
 #endregion
