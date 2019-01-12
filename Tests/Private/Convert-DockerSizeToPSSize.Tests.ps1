@@ -102,6 +102,10 @@ Describe 'Throw exceptions for invalid size values' {
     { Convert-DockerSizeToPSSize 'Qb' } | Should throw
   }
 
+  It 'throws error if valid number passed but invalid suffix' {
+    { Convert-DockerSizeToPSSize '100ZB' } | Should throw
+  }
+
   It 'throws error if valid number passed but no suffix' {
     { Convert-DockerSizeToPSSize '100' } | Should throw
   }
