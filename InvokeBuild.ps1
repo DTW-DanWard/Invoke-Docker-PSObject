@@ -14,6 +14,31 @@ if ($PSBoundParameters.ContainsKey('Debug')) {
 
 Set-StrictMode -Version Latest
 
+# borrowed from: http://wragg.io/add-a-code-coverage-badge-to-your-powershell-deployment-pipeline/
+function Update-CodeCoveragePercent {
+  [cmdletbinding(supportsshouldprocess)]
+  param(
+      [int]
+      $CodeCoverage = 0,
+
+      [string]
+      $TextFilePath = "$Env:BHProjectPath\Readme.md"
+  )
+
+  $BadgeColor = switch ($CodeCoverage) {
+      {$_ -in 90..100} { 'brightgreen' }
+      {$_ -in 75..89}  { 'yellow' }
+      {$_ -in 60..74}  { 'orange' }
+      default          { 'red' }
+  }
+
+  if ($PSCmdlet.ShouldProcess($TextFilePath)) {
+      $ReadmeContent = (Get-Content $TextFilePath)
+      $ReadmeContent = $ReadmeContent -replace "!\[Test Coverage\].+\)", "![Test Coverage](https://img.shields.io/badge/coverage-$CodeCoverage%25-$BadgeColor.svg?maxAge=60)"
+      $ReadmeContent | Set-Content -Path $TextFilePath
+  }
+}
+
 $ProjectRoot = $env:BHProjectPath
 if (-not $ProjectRoot) {
   $ProjectRoot = $PSScriptRoot
@@ -49,11 +74,15 @@ task Test Init, {
   $Line
   "`nTesting with PowerShell $PSVersion"
 
+  # code coverage badge changes and helper function adapted from:
+  # http://wragg.io/add-a-code-coverage-badge-to-your-powershell-deployment-pipeline/
+
   $Params = @{
-    Path         = "$ProjectRoot\Tests"
+    Path         = (Join-Path -Path $ProjectRoot -ChildPath Tests)
+    CodeCoverage = ((Get-ChildItem $ENV:BHModulePath -Recurse -Include "*.psm1","*.ps1").FullName)
     PassThru     = $true
     OutputFormat = "NUnitXml"
-    OutputFile   = "$ProjectRoot\$TestFile"
+    OutputFile   = (Join-Path -Path $ProjectRoot -ChildPath $TestFile)
   }
   # Integration tagged tests only run on the native developer machine; not on build server, not in test container
   # for this project these are tests against the actual docker.exe
@@ -62,7 +91,7 @@ task Test Init, {
   }
 
   # Gather test results. Store them in a variable and file
-  $TestResults = Invoke-Pester @Params
+  $script:TestResults = Invoke-Pester @Params
 
   # In Appveyor?  Upload our tests! #Abstract this into a function?
   If ($env:BHBuildSystem -eq 'AppVeyor') {
@@ -173,6 +202,10 @@ Task Build Test, Analyze, {
   } catch {
     "Failed to update version for '$env:BHProjectName': $_.`nContinuing with existing version"
   }
+
+  # update code coverage badge on readme.md
+  $CoveragePercent = [math]::floor(100 - (($script:TestResults.CodeCoverage.NumberOfCommandsMissed / $script:TestResults.CodeCoverage.NumberOfCommandsAnalyzed) * 100))
+  Update-CodeCoveragePercent -CodeCoverage $CoveragePercent
 }
 
 # Synopsis: Build and deploy module to PowerShell Gallery

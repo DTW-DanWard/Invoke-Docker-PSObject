@@ -1,5 +1,5 @@
 
-master: [![Build status](https://ci.appveyor.com/api/projects/status/1m6rgmj4h3p8m20q/branch/master?svg=true)](https://ci.appveyor.com/project/DTW-DanWard/invoke-docker-psobject/branch/master)   develop: [![Build status](https://ci.appveyor.com/api/projects/status/1m6rgmj4h3p8m20q/branch/develop?svg=true)](https://ci.appveyor.com/project/DTW-DanWard/invoke-docker-psobject/branch/develop)
+[![Build status](https://ci.appveyor.com/api/projects/status/1m6rgmj4h3p8m20q/branch/master?svg=true)](https://ci.appveyor.com/project/DTW-DanWard/invoke-docker-psobject/branch/master)  ![Test Coverage](https://img.shields.io/badge/coverage.svg)
 
 # Invoke-DockerPSObject
 Invoke-DockerPSObject is a function that runs Docker CLI commands in PowerShell but instead of returning an array of strings it returns proper PSObjects.  You can use these objects to filter, sort, return a specific member, etc. like any object in PowerShell.
@@ -61,4 +61,3 @@ I've been using this simple utility on my home machine for awhile.  When finally
 * PowerShell module release pipeline using [Warren F's awesome utilities](http://ramblingcookiemonster.github.io/PSDeploy-Inception/) to automatically build on AppVeyor and deploy to PowerShellGallery;
 * copious Pester unit testing;
 * lots of small stuff like dynamically loading/exporting Private/Public functions and custom object output formatting via ps1xml.  (You won't believe how many times I've been too ~~lazy~~ busy to actually add this to my projects.)
-
