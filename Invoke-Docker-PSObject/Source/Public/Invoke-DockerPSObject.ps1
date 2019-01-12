@@ -43,7 +43,8 @@ function Invoke-DockerPSObject {
   # also, don't do this if user has passed in their own --format parameter
   $ProcessedSubCmds = 'images', 'ps', 'history'
   Write-Verbose "Subcommands processed by this utility: $ProcessedSubCmds"
-  $SubCmd = $args[0]
+  $SubCmd = ''
+  if ($args.Count -gt 0) { $SubCmd = $args[0] }
   Write-Verbose "Subcommand passed this time: $SubCmd"
   Write-Verbose "Full list of user parameters passed: $args"
   #endregion

@@ -10,7 +10,7 @@ Invoke-DockerPSObject returns PSObjects for Docker commands that return tabular 
 
 
 ## Setup and Usage
-Download the PowerShell Beautifier utility. Clone it, zip it or get it from the PowerShell Gallery:
+Download the Invoke-Docker-PSObject utility. Clone it, zip it or get it from the PowerShell Gallery:
 ```PowerShell
 Install-Module -Name Invoke-Docker-PSObject
 ```
@@ -50,11 +50,11 @@ Note: it only does this for docker commands: images, ps and history.
 
 
 ### Release Testing
-*For each release* the PowerShell Beautifier is tested on:
+*For each release* the Invoke-Docker-PSObject is tested on:
 * Windows PowerShell (v5+) (native);
 * PowerShell Core - Windows (native);
-* Ubuntu 16.04 ([official PowerShell Core Docker container](https://hub.docker.com/r/microsoft/powershell/tags/)).
 
+[Change log](ChangeLog.md)
 
 ## Developer's Note
 I've been using this simple utility on my home machine for awhile.  When finally putting it online, though, I wanted to use this as an opportunity to create a module from complete scratch with all the latest and greatest PowerShell development techniques.  If you are new to module development or writing PowerShell with CI/CD and want something to review and learn, this project is a fairly small, self-contained utility that features:
