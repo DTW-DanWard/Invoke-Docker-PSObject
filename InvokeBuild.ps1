@@ -55,10 +55,10 @@ task Test Init, {
     OutputFormat = "NUnitXml"
     OutputFile   = "$ProjectRoot\$TestFile"
   }
-  # DevMachine tagged tests are only run on the native developer machine; not on build server, not in test container
-  # these tests typically are integration tests - blackbox testing against actual docker.exe
+  # Integration tagged tests only run on the native developer machine; not on build server, not in test container
+  # for this project these are tests against the actual docker.exe
   if (($env:BHBuildSystem -ne 'Unknown') -or ($null -eq (Get-Command -Name 'docker.exe' -ErrorAction SilentlyContinue))) {
-    $Params.ExcludeTag = @('DevMachine')
+    $Params.ExcludeTag = @('Integration')
   }
 
   # Gather test results. Store them in a variable and file

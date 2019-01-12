@@ -66,7 +66,7 @@ InModuleScope $env:BHProjectName {
 
 
 #region Docker integration tests
-Describe -Tag 'DevMachine' 'Docker integration tests' {
+Describe -Tag 'Integration' 'Docker integration tests' {
 
   Get-Module -Name $env:BHProjectName -All | Remove-Module -Force
   Import-Module $env:BHPSModuleManifest -Force -ErrorAction Stop
