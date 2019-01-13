@@ -30,6 +30,5 @@ on_success:
   - git config --global user.name "Appveyor"
   - git checkout %APPVEYOR_REPO_BRANCH%
   - git add README.md
-  - git commit -m "[skip ci] AppVeyor Build %APPVEYOR_BUILD_VERSION%"
+  - git commit -m "[skip ci] AppVeyor Build %APPVEYOR_BUILD_VERSION%" --allow-empty
   - git push
-
