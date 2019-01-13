@@ -1,5 +1,5 @@
 
-[![Build status](https://ci.appveyor.com/api/projects/status/1m6rgmj4h3p8m20q/branch/master?svg=true)](https://ci.appveyor.com/project/DTW-DanWard/invoke-docker-psobject/branch/master)  ![Test Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen.svg?maxAge=60)
+[![Build status](https://ci.appveyor.com/api/projects/status/1m6rgmj4h3p8m20q/branch/master?svg=true)](https://ci.appveyor.com/project/DTW-DanWard/invoke-docker-psobject/branch/master)  ![Test Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg?maxAge=60)
 
 # Invoke-DockerPSObject
 Invoke-DockerPSObject is a function that runs Docker CLI commands in PowerShell but instead of returning an array of strings it returns proper PSObjects.  You can use these objects to filter, sort, return a specific member, etc. like any object in PowerShell.
