@@ -6,6 +6,8 @@ image: Visual Studio 2017
 environment:
   NugetApiKey:
     secure: LdLID7s09cfdn/RnP63uPqcfVAC6jANTKnbCiUUw737IQ8wV95zx2SzDLkaVWVNR
+  GitToken:
+    secure: nyjiIuUkEkbCOXSnDs76VJyFMaQGwhZMAHI9pfwPiBLVp+TsbRswx6oPobo/8+AH
 
 # Allow WMF5 (i.e. PowerShellGallery functionality)
 os: WMF 5
@@ -20,3 +22,13 @@ build: false
 # Kick off the CI/CD pipeline
 test_script:
   - ps: . .\build.ps1 -Task 'Deploy'
+
+on_success:
+  - git config --global credential.helper store
+  - ps: Add-Content "$HOME\.git-credentials" "https://$($env:GitToken):x-oauth-basic@github.com`n"
+  - git config --global user.email "build@appveyor.com"
+  - git config --global user.name "Appveyor"
+  - git checkout %APPVEYOR_REPO_BRANCH%
+  - git add README.md
+  - git commit -m "[skip ci] AppVeyor Build %APPVEYOR_BUILD_VERSION%"
+  - git push

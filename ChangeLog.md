@@ -5,3 +5,6 @@ Initial version released - woo-hoo!  Tweaks to build/release process.
 
 ## v1.0.4
 Fix bug index outside array bounds if no parameters passed.
+
+## v1.0.5
+No runtime code changes: automated code coverage/readme update.
