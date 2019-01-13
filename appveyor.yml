@@ -32,3 +32,4 @@ on_success:
   - git add README.md
   - git commit -m "[skip ci] AppVeyor Build %APPVEYOR_BUILD_VERSION%" --allow-empty
   - git push
+
