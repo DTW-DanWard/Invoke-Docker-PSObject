@@ -14,15 +14,15 @@ if ($PSBoundParameters.ContainsKey('Debug')) {
 
 Set-StrictMode -Version Latest
 
-# borrowed from: http://wragg.io/add-a-code-coverage-badge-to-your-powershell-deployment-pipeline/
+#region Code coverage helper functions
+
+# code coverage badge changes and helper function adapted from:
+# http://wragg.io/add-a-code-coverage-badge-to-your-powershell-deployment-pipeline/
 function Update-CodeCoveragePercent {
   [cmdletbinding(supportsshouldprocess)]
   param(
-    [int]
-    $CodeCoverage = 0,
-
-    [string]
-    $TextFilePath = "$Env:BHProjectPath\Readme.md"
+    [int]$CodeCoverage = 0,
+    [string]$TextFilePath = "$Env:BHProjectPath\Readme.md"
   )
 
   $BadgeColor = switch ($CodeCoverage) {
@@ -33,11 +33,41 @@ function Update-CodeCoveragePercent {
   }
 
   if ($PSCmdlet.ShouldProcess($TextFilePath)) {
-    $ReadmeContent = (Get-Content $TextFilePath)
+    $ReadmeContent = Get-Content $TextFilePath
     $ReadmeContent = $ReadmeContent -replace "!\[Test Coverage\].+\)", "![Test Coverage](https://img.shields.io/badge/coverage-$CodeCoverage%25-$BadgeColor.svg?maxAge=60)"
     $ReadmeContent | Set-Content -Path $TextFilePath
   }
 }
+
+# returns $true if $NewCodeCoverage is DIFFERENT from current value in $TextFilePath (readme.md)
+function Test-CodeCoveragePercentUpdated {
+  [cmdletbinding(supportsshouldprocess)]
+  param(
+    [int]$NewCodeCoverage = 0,
+    [string]$TextFilePath = "$Env:BHProjectPath\Readme.md"
+  )
+  $Updated = $false
+  if ($PSCmdlet.ShouldProcess($TextFilePath)) {
+    $ReadmeContent = (Get-Content $TextFilePath)
+    $MatchPattern = "img.shields.io/badge/coverage-(?<CurrentCodeCoverage>[0-9]+)%25"
+    $MatchLine = $ReadmeContent -match $MatchPattern
+    # either there should be 0 matches or 1, if there are more than 1, that's an error
+    # only update if exactly 1 (if more than 1 will have to come to find problem)
+    if ($MatchLine.Count -eq 1) {
+      $MatchWithinLine = $MatchLine[0] -match $MatchPattern
+      # this should always be true but test anyway
+      if ($MatchWithinLine) {
+        $CurrentCodeCoverage = $Matches.CurrentCodeCoverage
+        if ($CurrentCodeCoverage -ne $NewCodeCoverage) {
+          $Updated = $true
+        }
+      }
+    }
+  }
+  $Updated
+}
+#endregion
+
 
 $ProjectRoot = $env:BHProjectPath
 if (-not $ProjectRoot) {
@@ -74,9 +104,6 @@ task Test Init, {
   $Line
   "`nTesting with PowerShell $PSVersion"
 
-  # code coverage badge changes and helper function adapted from:
-  # http://wragg.io/add-a-code-coverage-badge-to-your-powershell-deployment-pipeline/
-
   $Params = @{
     Path         = (Join-Path -Path $ProjectRoot -ChildPath Tests)
     CodeCoverage = ((Get-ChildItem $ENV:BHModulePath -Recurse -Include "*.psm1", "*.ps1").FullName)
@@ -102,6 +129,9 @@ task Test Init, {
 
   Remove-Item "$ProjectRoot\$TestFile" -Force -ErrorAction SilentlyContinue
 
+  # code coverage badge changes and helper function adapted from:
+  # http://wragg.io/add-a-code-coverage-badge-to-your-powershell-deployment-pipeline/
+
   # if failed tests then write an error to ensure does not continue to build & deploy steps
   # else if passed tests and on build server and on master branch then update code coverage badge
   # (does not have to be a deploy, just on build server and master)
@@ -110,8 +140,16 @@ task Test Init, {
   } elseif ($env:BHBuildSystem -ne 'Unknown' -and $env:BHBranchName -eq 'master') {
     # update code coverage badge on readme.md
     $CoveragePercent = [math]::floor(100 - (($TestResults.CodeCoverage.NumberOfCommandsMissed / $TestResults.CodeCoverage.NumberOfCommandsAnalyzed) * 100))
-    "Updating code coverage badge: $CoveragePercent"
-    Update-CodeCoveragePercent -CodeCoverage $CoveragePercent
+
+    # determine if update needs to be made
+    if ($true -eq (Test-CodeCoveragePercentUpdated -NewCodeCoverage $CoveragePercent)) {
+      "Updating code coverage badge: $CoveragePercent"
+      Update-CodeCoveragePercent -CodeCoverage $CoveragePercent
+      # update environment variable so build server knows to commit & push updated readme.md
+      $env:UpdateCoverageBadge = $true
+    } else {
+      "Updated code coverage percent is same as current value in readme.md: $CoveragePercent"
+    }
   }
   "`n"
 }
