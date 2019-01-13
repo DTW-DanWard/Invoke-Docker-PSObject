@@ -29,10 +29,10 @@ on_success:
       if ($env:UpdateCoverageBadge -eq $true) {
         git config --global credential.helper store
         Add-Content "$HOME\.git-credentials" "https://$($env:GitToken):x-oauth-basic@github.com`n"
-        config --global user.email "build@appveyor.com"
-        config --global user.name "Appveyor"
-        checkout %APPVEYOR_REPO_BRANCH%
-        add README.md
+        git config --global user.email "build@appveyor.com"
+        git config --global user.name "Appveyor"
+        git checkout %APPVEYOR_REPO_BRANCH%
+        git add README.md
         git commit -m "[skip ci] AppVeyor Build %APPVEYOR_BUILD_VERSION%"
         git push
       }
