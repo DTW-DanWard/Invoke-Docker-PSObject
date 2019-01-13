@@ -18,24 +18,24 @@ Set-StrictMode -Version Latest
 function Update-CodeCoveragePercent {
   [cmdletbinding(supportsshouldprocess)]
   param(
-      [int]
-      $CodeCoverage = 0,
+    [int]
+    $CodeCoverage = 0,
 
-      [string]
-      $TextFilePath = "$Env:BHProjectPath\Readme.md"
+    [string]
+    $TextFilePath = "$Env:BHProjectPath\Readme.md"
   )
 
   $BadgeColor = switch ($CodeCoverage) {
-      {$_ -in 90..100} { 'brightgreen' }
-      {$_ -in 75..89}  { 'yellow' }
-      {$_ -in 60..74}  { 'orange' }
-      default          { 'red' }
+    {$_ -in 90..100} { 'brightgreen' }
+    {$_ -in 75..89} { 'yellow' }
+    {$_ -in 60..74} { 'orange' }
+    default { 'red' }
   }
 
   if ($PSCmdlet.ShouldProcess($TextFilePath)) {
-      $ReadmeContent = (Get-Content $TextFilePath)
-      $ReadmeContent = $ReadmeContent -replace "!\[Test Coverage\].+\)", "![Test Coverage](https://img.shields.io/badge/coverage-$CodeCoverage%25-$BadgeColor.svg?maxAge=60)"
-      $ReadmeContent | Set-Content -Path $TextFilePath
+    $ReadmeContent = (Get-Content $TextFilePath)
+    $ReadmeContent = $ReadmeContent -replace "!\[Test Coverage\].+\)", "![Test Coverage](https://img.shields.io/badge/coverage-$CodeCoverage%25-$BadgeColor.svg?maxAge=60)"
+    $ReadmeContent | Set-Content -Path $TextFilePath
   }
 }
 
@@ -79,7 +79,7 @@ task Test Init, {
 
   $Params = @{
     Path         = (Join-Path -Path $ProjectRoot -ChildPath Tests)
-    CodeCoverage = ((Get-ChildItem $ENV:BHModulePath -Recurse -Include "*.psm1","*.ps1").FullName)
+    CodeCoverage = ((Get-ChildItem $ENV:BHModulePath -Recurse -Include "*.psm1", "*.ps1").FullName)
     PassThru     = $true
     OutputFormat = "NUnitXml"
     OutputFile   = (Join-Path -Path $ProjectRoot -ChildPath $TestFile)
@@ -91,7 +91,7 @@ task Test Init, {
   }
 
   # Gather test results. Store them in a variable and file
-  $script:TestResults = Invoke-Pester @Params
+  $TestResults = Invoke-Pester @Params
 
   # In Appveyor?  Upload our tests! #Abstract this into a function?
   If ($env:BHBuildSystem -eq 'AppVeyor') {
@@ -102,9 +102,16 @@ task Test Init, {
 
   Remove-Item "$ProjectRoot\$TestFile" -Force -ErrorAction SilentlyContinue
 
-  # if failed tests then write an error to ensure does not continue to deploy steps
+  # if failed tests then write an error to ensure does not continue to build & deploy steps
+  # else if passed tests and on build server and on master branch then update code coverage badge
+  # (does not have to be a deploy, just on build server and master)
   if ($TestResults.FailedCount -gt 0) {
     Write-Error "Failed '$($TestResults.FailedCount)' tests, build failed"
+  } elseif ($env:BHBuildSystem -ne 'Unknown' -and $env:BHBranchName -eq 'master') {
+    # update code coverage badge on readme.md
+    $CoveragePercent = [math]::floor(100 - (($TestResults.CodeCoverage.NumberOfCommandsMissed / $TestResults.CodeCoverage.NumberOfCommandsAnalyzed) * 100))
+    "Updating code coverage badge: $CoveragePercent"
+    Update-CodeCoveragePercent -CodeCoverage $CoveragePercent
   }
   "`n"
 }
@@ -202,10 +209,6 @@ Task Build Test, Analyze, {
   } catch {
     "Failed to update version for '$env:BHProjectName': $_.`nContinuing with existing version"
   }
-
-  # update code coverage badge on readme.md
-  $CoveragePercent = [math]::floor(100 - (($script:TestResults.CodeCoverage.NumberOfCommandsMissed / $script:TestResults.CodeCoverage.NumberOfCommandsAnalyzed) * 100))
-  Update-CodeCoveragePercent -CodeCoverage $CoveragePercent
 }
 
 # Synopsis: Build and deploy module to PowerShell Gallery
