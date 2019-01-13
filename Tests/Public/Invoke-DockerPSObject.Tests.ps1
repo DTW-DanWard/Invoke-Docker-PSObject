@@ -22,6 +22,16 @@ Import-Module $env:BHPSModuleManifest -Force -ErrorAction Stop
 
 InModuleScope $env:BHProjectName {
   Describe 'Docker unit tests' {
+    Context 'Test docker passthrough commands (do not add --format json)' {
+      Mock -CommandName 'Invoke-DockerExe' -MockWith { 'Usage:  docker [OPTIONS] COMMAND' }
+      It 'Invoke-DockerPSObject --help returns help' {
+        Invoke-DockerPSObject --help | Should Match '^Usage'
+      }
+      It 'Invoke-DockerPSObject -h returns help' {
+        Invoke-DockerPSObject -h | Should Match '^Usage'
+      }
+    }
+
     Context 'Test docker ps -a with empty results' {
       Mock -CommandName 'Invoke-DockerExe' -MockWith { $null }
       It 'Invoke-DockerPSObject returns no objects' {
