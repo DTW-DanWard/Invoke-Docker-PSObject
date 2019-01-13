@@ -31,6 +31,8 @@ on_success:
         Add-Content "$HOME\.git-credentials" "https://$($env:GitToken):x-oauth-basic@github.com`n"
         git config --global user.email "build@appveyor.com"
         git config --global user.name "Appveyor"
+        # suppress CRLF warnings in stderr during git add
+        git config --global core.safecrlf false
         git checkout -q $env:APPVEYOR_REPO_BRANCH
         git add README.md
         git commit -q -m "[skip ci] AppVeyor Build $env:APPVEYOR_BUILD_VERSION"
