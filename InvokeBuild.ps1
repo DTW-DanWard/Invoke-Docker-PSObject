@@ -34,7 +34,7 @@ function Update-CodeCoveragePercent {
 
   if ($PSCmdlet.ShouldProcess($TextFilePath)) {
     $ReadmeContent = Get-Content $TextFilePath
-    $ReadmeContent = $ReadmeContent -replace "!\[Test Coverage\].+\)", "![Test Coverage](https://img.shields.io/badge/coverage-$CodeCoverage%25-$BadgeColor.svg?maxAge=60)"
+    $ReadmeContent = $ReadmeContent -replace "!\[Test Coverage\].+\) *", "![Test Coverage](https://img.shields.io/badge/coverage-$CodeCoverage%25-$BadgeColor.svg?maxAge=60)"
     $ReadmeContent | Set-Content -Path $TextFilePath
   }
 }
