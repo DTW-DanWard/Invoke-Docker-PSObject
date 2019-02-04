@@ -1,10 +1,7 @@
 param(
-  [ValidateSet('Analyze','Build','Test')]
+  [ValidateSet('Analyze','Build','Default','Deploy','Init','Test')]
   [string]$Task = 'Default'
 )
-
-# note: above tasks in set are not *all* defined Tasks, just ones most likely to be used manually at cmdline;
-# build server only runs Default
 
 # adapted from Warren F's (ramblingcookiemonster) excellent PowerShell build/deploy utilties
 
